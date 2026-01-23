@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aplikasi Situbar - Draught Survey (Offline)</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <script src="assets/js/tailwindcss.js"></script>
+    <link href="assets/css/fontawesome.css" rel="stylesheet">
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f1f5f9; font-size: 14px; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Input Styling */
+        input.input-dummy, select.input-dummy {
+            background-color: #fff; border: 1px solid #cbd5e1; color: #1e293b;
+            font-family: 'Courier Prime', monospace; font-weight: 700; text-align: center;
+            min-height: 38px; border-radius: 6px; width: 100%; font-size: 0.9rem;
+            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        input.input-dummy:focus, select.input-dummy:focus { 
+            border-color: #3b82f6; outline: none; ring: 2px solid rgba(59, 130, 246, 0.2);
+        }
+        input.input-dummy.updated { background-color: #dbeafe; border-color: #2563eb; transition: background-color 0.4s; }
+        
+        /* Card Styling */
+        .glass-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-header { background: #f8fafc; padding: 10px 16px; font-weight: 700; color: #334155; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 0.95rem; }
+        
+        /* Report Paper */
+        .paper-report { background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; }
+        .paper-report::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #3b82f6, #06b6d4); }
+        .report-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding: 8px 0; align-items: center; }
+        .report-value { color: #0f172a; font-weight: 700; font-family: 'Courier Prime', monospace; }
+        
+        /* Tooltip */
+        .tooltip-wrap { position: relative; width: 100%; }
+        .tooltip-content {
+            visibility: hidden; background-color: #1e293b; color: #fff; text-align: center;
+            border-radius: 4px; padding: 5px 8px; position: absolute; z-index: 50;
+            bottom: 110%; left: 50%; transform: translateX(-50%); opacity: 0; transition: 0.2s;
+            font-size: 0.7rem; pointer-events: none; width: max-content; max-width: 180px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tooltip-content::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent; }
+        .tooltip-wrap:hover .tooltip-content, .tooltip-wrap:focus-within .tooltip-content { visibility: visible; opacity: 1; }
+        
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    </style>
+</head>
+<body class="pb-24 overflow-hidden">
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center border-4 border-blue-500/20">
+            <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                <i class="fas fa-ship text-3xl text-white"></i>
+            </div>
+
+
+            <h2 class="text-2xl font-bold text-slate-800 mb-1">Simulasi Situbar</h2>
+            <p class="text-sm text-slate-500 mb-6">Silahkan login untuk melanjutkan</p>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Username</label>
+                    <div class="tooltip-wrap">
+                        <span class="tooltip-content">isikan nama instansi kita</span>
+                        <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan username">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Password</label>
+                    <div class="tooltip-wrap">
+                        <span class="tooltip-content">isikan kota penempatan kita</span>
+                        <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') doLogin()">
+                    </div>
+                </div>
+                <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs font-bold p-3 rounded-lg flex items-center gap-2 border border-red-100 animate-pulse">
+                    <i class="fas fa-exclamation-circle"></i> Username atau Password salah!
+                </div>
+                <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-[0.98]">
+                    MASUK APLIKASI
+                </button>
+            </div>
+            <div class="mt-6 text-xs text-slate-400 font-medium">
+                &copy; 2026 Epiphania Rino,PDAD Beacukai Banjarmasin
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40 px-4 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg"><i class="fas fa-ship text-lg"></i></div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-800 leading-tight">Simulasi Penggunaan Aplikasi Situbar Curah Padat</h1>
+                    <p class="text-xs text-slate-500 font-medium">Draught Survey Calculator</p>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full md:w-auto">
+                 <button onclick="resetAllData()" class="flex-1 md:flex-none bg-red-100 text-red-600 px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-red-200 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-trash"></i> KOSONGKAN
+                </button>
+                <button onclick="generateAllData()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-magic"></i> GENERATE DATA
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="max-w-7xl mx-auto mt-4 px-2 md:px-4 sticky top-[68px] z-30 bg-[#f1f5f9] pt-2 overflow-x-auto">
+        <div class="flex min-w-max gap-1">
+            <button onclick="switchTab('initial')" id="btn-initial" class="px-6 py-2 text-sm font-bold bg-white rounded-t-lg border-t border-x border-slate-300 text-blue-600 shadow-sm">1. Initial Survey</button>
+            <button onclick="switchTab('final')" id="btn-final" class="px-6 py-2 text-sm font-bold text-slate-500 hover:bg-white hover:text-blue-600 rounded-t-lg transition">2. Final Survey</button>
+            <button onclick="switchTab('report')" id="btn-report" class="px-6 py-2 text-sm font-bold text-slate-500 hover:bg-white hover:text-blue-600 rounded-t-lg transition">3. Laporan Hasil</button>
+            <button onclick="switchTab('guide')" id="btn-guide" class="px-6 py-2 text-sm font-bold text-slate-500 hover:bg-white hover:text-blue-600 rounded-t-lg transition">4. Panduan</button>
+            <button onclick="switchTab('latihan')" id="btn-latihan" class="px-6 py-2 text-sm font-bold text-slate-500 hover:bg-white hover:text-blue-600 rounded-t-lg transition">5. Latihan</button>
+            <button onclick="switchTab('soal-simulasi')" id="btn-soal-simulasi" class="px-6 py-2 text-sm font-bold text-slate-500 hover:bg-white hover:text-blue-600 rounded-t-lg transition">6. Soal Simulasi</button>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-2 md:p-4">
+
+        <!-- TAB 1: INITIAL -->
+        <div id="initial" class="tab-content active">
+            <!-- Info Kapal -->
+            <div class="glass-card">
+                <div class="p-4 grid md:grid-cols-2 gap-4 items-center">
+                   <div class="w-full flex gap-2">
+                       <input type="text" id="ship-name" class="input-dummy text-left px-3 font-bold text-blue-800" value="MV. SITUBAR TEST" placeholder="NAMA KAPAL">
+                        <button onclick="toggleUnit()" id="btn-unit" class="bg-teal-100 text-teal-800 border border-teal-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-teal-200 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-balance-scale"></i> METRIC SYSTEM
+                        </button>
+                   </div>
+                   <div class="text-right text-xs text-slate-400 hidden md:block">Skenario: Initial (Kosong)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left: Drafts & Ship Data -->
+                <div class="space-y-4">
+                    <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-ruler-vertical text-orange-500"></i> Data Ukur Draft</div>
+                        <div class="p-4 grid grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-xs text-center font-bold text-slate-500 mb-2">PORT (KIRI)</p>
+                                <div class="space-y-2">
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Haluan Kiri</span><input type="number" step="0.01" id="i-fp" class="input-dummy" placeholder="Fwd" oninput="calc('initial')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Tengah Kiri</span><input type="number" step="0.01" id="i-mp" class="input-dummy" placeholder="Mid" oninput="calc('initial')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Buritan Kiri</span><input type="number" step="0.01" id="i-ap" class="input-dummy" placeholder="Aft" oninput="calc('initial')"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-center font-bold text-slate-500 mb-2">STARBOARD (KANAN)</p>
+                                <div class="space-y-2">
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Haluan Kanan</span><input type="number" step="0.01" id="i-fs" class="input-dummy" placeholder="Fwd" oninput="calc('initial')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Tengah Kanan</span><input type="number" step="0.01" id="i-ms" class="input-dummy" placeholder="Mid" oninput="calc('initial')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Buritan Kanan</span><input type="number" step="0.01" id="i-as" class="input-dummy" placeholder="Aft" oninput="calc('initial')"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 border-t pt-2 bg-slate-50">
+                             <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+                                 <span>Quarter Mean (QM):</span> <span id="i-qm-res" class="text-blue-600 text-lg font-mono">0.000</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-cog text-slate-500"></i> Data Kapal & Koreksi</div>
+                        <div class="p-4 space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="tooltip-wrap"><span class="tooltip-content">Lihat 'Stability Booklet'</span><label class="text-[10px] text-slate-500 font-bold block mb-1">LIGHTSHIP</label><input type="number" id="i-lightship" class="input-dummy" oninput="calc('initial')"></div>
+                                <div class="tooltip-wrap"><span class="tooltip-content">Lihat 'Ship Particulars' atau 'GA Plan'</span><label class="text-[10px] text-slate-500 font-bold block mb-1">LBP</label><input type="number" id="i-lbp" class="input-dummy" oninput="calc('initial')"></div>
+                            </div>
+                            <div class="tooltip-wrap"><span class="tooltip-content">Ukur sampel air dengan Hydrometer</span><label class="text-[10px] text-slate-500 font-bold block mb-1">DENSITY (MT/M3)</label><input type="number" step="0.001" id="i-density" class="input-dummy" oninput="calc('initial')"></div>
+                            
+                            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                <p class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Koreksi Jarak Marka</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="tooltip-wrap">
+                                        <span class="tooltip-content">Jarak draft mark depan ke Garis Tegak Depan (FP)</span>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="i-df" class="input-dummy text-sm" placeholder="dF" oninput="calc('initial')">
+                                            <select id="i-df-pos" class="input-dummy text-[10px] p-0 h-6" onchange="calc('initial')">
+                                                <option value="behind">Behind FP (Belakang)</option>
+                                                <option value="ahead">Ahead of FP (Depan)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-wrap">
+                                        <span class="tooltip-content">Jarak draft mark tengah ke Midship</span>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="i-dm" class="input-dummy text-sm" placeholder="dM" oninput="calc('initial')">
+                                            <select id="i-plimsoll" class="input-dummy text-[10px] p-0 h-6" onchange="calc('initial')">
+                                                <option value="behind">Behind Mid (Belakang)</option>
+                                                <option value="ahead">Ahead of Mid (Depan)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-wrap">
+                                        <span class="tooltip-content">Jarak draft mark belakang ke Garis Tegak Belakang (AP)</span>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="i-da" class="input-dummy text-sm" placeholder="dA" oninput="calc('initial')">
+                                            <select id="i-da-pos" class="input-dummy text-[10px] p-0 h-6" onchange="calc('initial')">
+                                                <option value="ahead">Ahead of AP (Depan)</option>
+                                                <option value="behind">Behind AP (Belakang)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Hydro & Deductibles -->
+                <div class="space-y-4">
+                     <div class="glass-card">
+                        <div class="card-header justify-between">
+                            <span><i class="fas fa-tint text-blue-400"></i> Deductibles</span>
+                            <span class="badge badge-blue" id="i-tot-ded">Total: 0.00</span>
+                        </div>
+                        <div class="p-4 grid grid-cols-2 gap-3 text-xs">
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki Air Tawar</span><label class="block mb-1 font-bold text-slate-500">Fresh Water</label><input type="number" id="i-fw" class="input-dummy text-right px-2" oninput="calc('initial')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki Ballast</span><label class="block mb-1 font-bold text-slate-500">Ballast</label><input type="number" id="i-bw" class="input-dummy text-right px-2 text-blue-600" oninput="calc('initial')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki FO</span><label class="block mb-1 font-bold text-slate-500">Fuel Oil</label><input type="number" id="i-fo" class="input-dummy text-right px-2" oninput="calc('initial')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki DO</span><label class="block mb-1 font-bold text-slate-500">Diesel Oil</label><input type="number" id="i-do" class="input-dummy text-right px-2" oninput="calc('initial')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Stok Lube Oil</span><label class="block mb-1 font-bold text-slate-500">Lube Oil</label><input type="number" id="i-lo" class="input-dummy text-right px-2" oninput="calc('initial')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Stok Cairan Lainnya</span><label class="block mb-1 font-bold text-slate-500">Others</label><input type="number" id="i-other" class="input-dummy text-right px-2" oninput="calc('initial')"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-table text-indigo-500"></i> Hydrostatic Data</div>
+                        <div class="p-4 space-y-3 text-xs">
+                             <div class="grid grid-cols-2 gap-2 text-center">
+                                 <div><label class="block font-bold mb-1">Q1 (Bawah)</label><div class="tooltip-wrap"><span class="tooltip-content">Cari draft di Buku Hydrostatic (Bawah)</span><input id="i-q1" class="input-dummy" oninput="calc('initial')"></div></div>
+                                 <div><label class="block font-bold mb-1">Q2 (Atas)</label><div class="tooltip-wrap"><span class="tooltip-content">Cari draft di Buku Hydrostatic (Atas)</span><input id="i-q2" class="input-dummy" oninput="calc('initial')"></div></div>
+                             </div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai Disp Q1</span><input id="i-disp1" class="input-dummy" placeholder="Disp 1" oninput="calc('initial')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai Disp Q2</span><input id="i-disp2" class="input-dummy" placeholder="Disp 2" oninput="calc('initial')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai LCF Q1</span><input id="i-lcf1" class="input-dummy" placeholder="LCF 1" oninput="calc('initial')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai LCF Q2</span><input id="i-lcf2" class="input-dummy" placeholder="LCF 2" oninput="calc('initial')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai TPC Q1</span><input id="i-tpc1" class="input-dummy" placeholder="TPC 1" oninput="calc('initial')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai TPC Q2</span><input id="i-tpc2" class="input-dummy" placeholder="TPC 2" oninput="calc('initial')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="i-mtc2-1" class="input-dummy" placeholder="MTC 2-1" oninput="calc('initial')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="i-mtc2-2" class="input-dummy" placeholder="MTC 2-2" oninput="calc('initial')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q1</span><input id="i-mtc1-1" class="input-dummy" placeholder="MTC 1-1" oninput="calc('initial')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="i-mtc1-2" class="input-dummy" placeholder="MTC 1-2" oninput="calc('initial')"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Result Card Initial -->
+                    <div class="glass-card bg-slate-800 text-white border-none">
+                        <div class="p-4">
+                            <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase">Rangkuman Perhitungan (Initial)</h4>
+                            <div class="flex justify-between text-xs mb-1"><span>Disp Table:</span><span id="res-i-disp" class="font-mono">0.000</span></div>
+                            <div class="flex justify-between text-xs mb-1"><span>Trim Corr:</span><span id="res-i-trim" class="font-mono text-blue-300">0.000</span></div>
+                            <div class="flex justify-between text-xs mb-1"><span>Density Corr:</span><span id="res-i-dens" class="font-mono text-red-300">0.000</span></div>
+                            <div class="flex justify-between border-b border-slate-600 pb-2 mb-2">
+                                <span class="font-bold">Net Displacement:</span>
+                                <span class="font-mono font-bold" id="res-i-net">0.000</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-yellow-400">CONSTANT KAPAL</span>
+                                <span class="text-2xl font-mono font-bold" id="val-constant">0.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: FINAL (Similar Structure) -->
+        <div id="final" class="tab-content">
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left: Drafts Final -->
+                <div class="space-y-4">
+                     <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-ruler-combined text-green-500"></i> Data Ukur Draft (Final)</div>
+                        <div class="p-4 grid grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-xs text-center font-bold text-slate-500 mb-2">PORT</p>
+                                <div class="space-y-2">
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Haluan Kiri</span><input type="number" step="0.01" id="f-fp" class="input-dummy" placeholder="Fwd" oninput="calc('f')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Tengah Kiri</span><input type="number" step="0.01" id="f-mp" class="input-dummy" placeholder="Mid" oninput="calc('f')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Buritan Kiri</span><input type="number" step="0.01" id="f-ap" class="input-dummy" placeholder="Aft" oninput="calc('f')"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-center font-bold text-slate-500 mb-2">STARBOARD</p>
+                                <div class="space-y-2">
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Haluan Kanan</span><input type="number" step="0.01" id="f-fs" class="input-dummy" placeholder="Fwd" oninput="calc('f')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Tengah Kanan</span><input type="number" step="0.01" id="f-ms" class="input-dummy" placeholder="Mid" oninput="calc('f')"></div>
+                                    <div class="tooltip-wrap"><span class="tooltip-content">Lihat angka draft di Buritan Kanan</span><input type="number" step="0.01" id="f-as" class="input-dummy" placeholder="Aft" oninput="calc('f')"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 border-t pt-2 bg-slate-50">
+                             <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+                                 <span>Quarter Mean (QM):</span> <span id="f-qm-res" class="text-blue-600 text-lg font-mono">0.000</span>
+                             </div>
+                        </div>
+                    </div>
+
+                     <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-copy text-slate-500"></i> Data Kapal (Final)</div>
+                        <div class="p-4 space-y-3">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="tooltip-wrap"><span class="tooltip-content">Lihat 'Stability Booklet'</span><label class="text-[10px] text-slate-500 font-bold block mb-1">LIGHTSHIP</label><input type="number" id="f-lightship" class="input-dummy" oninput="calc('f')"></div>
+                                <div class="tooltip-wrap"><span class="tooltip-content">Lihat 'Ship Particulars' atau 'GA Plan'</span><label class="text-[10px] text-slate-500 font-bold block mb-1">LBP</label><input type="number" id="f-lbp" class="input-dummy" oninput="calc('f')"></div>
+                            </div>
+                            <div class="tooltip-wrap"><span class="tooltip-content">Ukur sampel air dengan Hydrometer</span><label class="text-[10px] text-slate-500 font-bold block mb-1">DENSITY FINAL</label><input type="number" step="0.001" id="f-density" class="input-dummy" placeholder="Density Final" oninput="calc('f')"></div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="tooltip-wrap">
+                                    <span class="tooltip-content">Jarak draft mark depan ke Garis Tegak Depan (FP)</span>
+                                    <div class="flex flex-col gap-1">
+                                        <input type="number" id="f-df" class="input-dummy text-sm" placeholder="dF" oninput="calc('f')">
+                                        <select id="f-df-pos" class="input-dummy text-[10px] p-0 h-6" onchange="calc('f')">
+                                            <option value="behind">Behind FP (Belakang)</option>
+                                            <option value="ahead">Ahead of FP (Depan)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="tooltip-wrap">
+                                    <span class="tooltip-content">Jarak draft mark tengah ke Midship</span>
+                                    <div class="flex flex-col gap-1">
+                                        <input type="number" id="f-dm" class="input-dummy text-sm" placeholder="dM" oninput="calc('f')">
+                                        <select id="f-plimsoll" class="input-dummy text-[10px] p-0 h-6" onchange="calc('f')">
+                                            <option value="behind">Behind Mid (Belakang)</option>
+                                            <option value="ahead">Ahead of Mid (Depan)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="tooltip-wrap">
+                                    <span class="tooltip-content">Jarak draft mark belakang ke Garis Tegak Belakang (AP)</span>
+                                    <div class="flex flex-col gap-1">
+                                        <input type="number" id="f-da" class="input-dummy text-sm" placeholder="dA" oninput="calc('f')">
+                                        <select id="f-da-pos" class="input-dummy text-[10px] p-0 h-6" onchange="calc('f')">
+                                            <option value="ahead">Ahead of AP (Depan)</option>
+                                            <option value="behind">Behind AP (Belakang)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+
+                 <!-- Right: Hydro Final -->
+                 <div class="space-y-4">
+                     <div class="glass-card">
+                        <div class="card-header justify-between">
+                            <span><i class="fas fa-tint text-blue-400"></i> Deductible (Final)</span>
+                            <span class="badge badge-blue" id="f-tot-ded">Total: 0.00</span>
+                        </div>
+                        <div class="p-4 grid grid-cols-2 gap-3 text-xs">
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki Air Tawar</span><label class="block mb-1 font-bold text-slate-500">Fresh Water</label><input type="number" id="f-fw" class="input-dummy text-right px-2" oninput="calc('f')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki Ballast</span><label class="block mb-1 font-bold text-slate-500">Ballast</label><input type="number" id="f-bw" class="input-dummy text-right px-2 text-blue-600" oninput="calc('f')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki FO</span><label class="block mb-1 font-bold text-slate-500">Fuel Oil</label><input type="number" id="f-fo" class="input-dummy text-right px-2" oninput="calc('f')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Sounding tangki DO</span><label class="block mb-1 font-bold text-slate-500">Diesel Oil</label><input type="number" id="f-do" class="input-dummy text-right px-2" oninput="calc('f')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Stok Lube Oil</span><label class="block mb-1 font-bold text-slate-500">Lube Oil</label><input type="number" id="f-lo" class="input-dummy text-right px-2" oninput="calc('f')"></div>
+                             <div class="tooltip-wrap"><span class="tooltip-content">Stok Cairan Lainnya</span><label class="block mb-1 font-bold text-slate-500">Others</label><input type="number" id="f-other" class="input-dummy text-right px-2" oninput="calc('f')"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header"><i class="fas fa-table text-indigo-500"></i> Hydro Final</div>
+                        <div class="p-4 space-y-3 text-xs">
+                             <div class="grid grid-cols-2 gap-2 text-center">
+                                 <div><label class="block font-bold mb-1">Q1</label><div class="tooltip-wrap"><span class="tooltip-content">Cari draft di Buku Hydrostatic (Bawah)</span><input id="f-q1" class="input-dummy" oninput="calc('f')"></div></div>
+                                 <div><label class="block font-bold mb-1">Q2</label><div class="tooltip-wrap"><span class="tooltip-content">Cari draft di Buku Hydrostatic (Atas)</span><input id="f-q2" class="input-dummy" oninput="calc('f')"></div></div>
+                             </div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai Disp Q1</span><input id="f-disp1" class="input-dummy" placeholder="Disp 1" oninput="calc('f')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai Disp Q2</span><input id="f-disp2" class="input-dummy" placeholder="Disp 2" oninput="calc('f')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai LCF Q1</span><input id="f-lcf1" class="input-dummy" placeholder="LCF 1" oninput="calc('f')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai LCF Q2</span><input id="f-lcf2" class="input-dummy" placeholder="LCF 2" oninput="calc('f')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai TPC Q1</span><input id="f-tpc1" class="input-dummy" placeholder="TPC 1" oninput="calc('f')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai TPC Q2</span><input id="f-tpc2" class="input-dummy" placeholder="TPC 2" oninput="calc('f')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="f-mtc2-1" class="input-dummy" placeholder="MTC2-1" oninput="calc('f')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="f-mtc2-2" class="input-dummy" placeholder="MTC2-2" oninput="calc('f')"></div></div>
+                             <div class="grid grid-cols-2 gap-2"><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q1</span><input id="f-mtc1-1" class="input-dummy" placeholder="MTC1-1" oninput="calc('f')"></div><div class="tooltip-wrap"><span class="tooltip-content">Nilai MTC Q2</span><input id="f-mtc1-2" class="input-dummy" placeholder="MTC1-2" oninput="calc('f')"></div></div>
+                        </div>
+                    </div>
+
+                     <!-- Result Card Final -->
+                    <div class="glass-card bg-slate-800 text-white border-none">
+                        <div class="p-4">
+                            <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase">Rangkuman Perhitungan (Final)</h4>
+                            <div class="flex justify-between text-xs mb-1"><span>Disp Table:</span><span id="res-f-disp" class="font-mono">0.000</span></div>
+                            <div class="flex justify-between text-xs mb-1"><span>Trim Corr:</span><span id="res-f-trim" class="font-mono text-blue-300">0.000</span></div>
+                            <div class="flex justify-between text-xs mb-1"><span>Density Corr:</span><span id="res-f-dens" class="font-mono text-red-300">0.000</span></div>
+                            <div class="flex justify-between border-b border-slate-600 pb-2 mb-2">
+                                <span class="font-bold">Net Displacement:</span>
+                                <span class="font-mono font-bold" id="res-f-net">0.000</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-green-400">NET CARGO</span>
+                                <span class="text-2xl font-mono font-bold" id="val-cargo">0.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: REPORT -->
+        <div id="report" class="tab-content">
+            <div class="max-w-4xl mx-auto paper-report p-8 rounded-lg mb-8">
+                <div class="flex justify-between items-end border-b-2 border-slate-800 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold font-serif text-slate-900 tracking-tight">LAPORAN SURVEY</h2>
+                        <p class="text-sm text-slate-500 uppercase tracking-widest mt-1">Situbar Official Report</p>
+                    </div>
+                    <div class="text-right text-sm font-mono text-slate-600">
+                        <p id="rpt-date">Date: -</p>
+                        <p id="rpt-ship">Vessel: -</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-slate-800 border-b border-slate-300 pb-2 mb-3 flex items-center gap-2"><i class="fas fa-ship"></i> A. INITIAL SURVEY</h4>
+                        
+                        <div class="report-header-sub">I. DRAFT DATA</div>
+                        <div class="report-row"><span class="report-label">Mean Fwd Draft</span><span class="report-value" id="rpt-i-mf">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Mean Mid Draft</span><span class="report-value" id="rpt-i-mm">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Mean Aft Draft</span><span class="report-value" id="rpt-i-ma">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Apparent Trim (Obs)</span><span class="report-value" id="rpt-i-trim">0.000</span></div>
+                        <div class="report-row"><span class="report-label font-bold text-slate-700">True Trim (Corr)</span><span class="report-value font-bold" id="rpt-i-truetrim">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">II. CORRECTIONS</div>
+                        <div class="report-row"><span class="report-label">Stem Corr Fwd</span><span class="report-value text-blue-600" id="rpt-i-cf">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Stem Corr Mid</span><span class="report-value text-blue-600" id="rpt-i-cm">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Stem Corr Aft</span><span class="report-value text-blue-600" id="rpt-i-ca">0.000</span></div>
+                        
+                        <div class="report-row border-t border-slate-200 mt-1 pt-1"><span class="report-label">Corr'd Draft Fwd</span><span class="report-value" id="rpt-i-corr-f">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Corr'd Draft Mid (M2)</span><span class="report-value" id="rpt-i-corr-m">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Corr'd Draft Aft</span><span class="report-value" id="rpt-i-corr-a">0.000</span></div>
+
+                        <div class="report-row bg-blue-50 mt-1"><span class="report-label text-slate-700">Fore & Aft Mean (M1)</span><span class="report-value" id="rpt-i-m1">0.000</span></div>
+                        <div class="report-row bg-blue-50"><span class="report-label text-slate-700">Mean of Mean (M3)</span><span class="report-value" id="rpt-i-m3">0.000</span></div>
+                        
+                        <div class="report-row bg-slate-50 font-bold mt-1"><span class="report-label text-slate-900">Quarter Mean (QM)</span><span class="report-value" id="rpt-i-qm">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">III. DISPLACEMENT</div>
+                        <div class="report-row"><span class="report-label">Displacement (Table)</span><span class="report-value" id="rpt-i-disp">0.000</span></div>
+                        <div class="report-row"><span class="report-label">1st Trim Correction</span><span class="report-value text-blue-600" id="rpt-i-trim1">0.000</span></div>
+                        <div class="report-row"><span class="report-label">2nd Trim Correction</span><span class="report-value text-blue-600" id="rpt-i-trim2">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Density Correction</span><span class="report-value text-red-600" id="rpt-i-dens">0.000</span></div>
+                        <div class="report-row bg-slate-100 font-bold border-t border-slate-300"><span class="report-label text-slate-900">NET DISPLACEMENT</span><span class="report-value" id="rpt-i-net">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">IV. CONSTANT</div>
+                        <div class="report-row"><span class="report-label">Total Deductibles</span><span class="report-value text-red-600" id="rpt-i-ded">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Lightship</span><span class="report-value text-red-600" id="rpt-i-ls">0.000</span></div>
+                        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-center">
+                            <span class="report-label block text-yellow-700 text-xs uppercase mb-1 font-bold">Constant Kapal</span>
+                            <span class="report-value text-xl text-yellow-900" id="rpt-constant">0.000</span>
+                        </div>
+                        
+                        <div class="report-header-sub mt-4">V. INTERPRETASI HASIL</div>
+                        <div class="report-row border-none pb-0"><span class="report-value text-xs font-normal text-justify leading-relaxed text-slate-600" id="rpt-i-interpret">-</span></div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-slate-800 border-b border-slate-300 pb-2 mb-3 flex items-center gap-2"><i class="fas fa-box-open"></i> B. FINAL SURVEY</h4>
+                        
+                        <div class="report-header-sub">I. DRAFT DATA</div>
+                        <div class="report-row"><span class="report-label">Mean Fwd Draft</span><span class="report-value" id="rpt-f-mf">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Mean Mid Draft</span><span class="report-value" id="rpt-f-mm">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Mean Aft Draft</span><span class="report-value" id="rpt-f-ma">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Apparent Trim (Obs)</span><span class="report-value" id="rpt-f-trim">0.000</span></div>
+                        <div class="report-row"><span class="report-label font-bold text-slate-700">True Trim (Corr)</span><span class="report-value font-bold" id="rpt-f-truetrim">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">II. CORRECTIONS</div>
+                        <div class="report-row"><span class="report-label">Stem Corr Fwd</span><span class="report-value text-blue-600" id="rpt-f-cf">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Stem Corr Mid</span><span class="report-value text-blue-600" id="rpt-f-cm">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Stem Corr Aft</span><span class="report-value text-blue-600" id="rpt-f-ca">0.000</span></div>
+                        
+                        <div class="report-row border-t border-slate-200 mt-1 pt-1"><span class="report-label">Corr'd Draft Fwd</span><span class="report-value" id="rpt-f-corr-f">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Corr'd Draft Mid (M2)</span><span class="report-value" id="rpt-f-corr-m">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Corr'd Draft Aft</span><span class="report-value" id="rpt-f-corr-a">0.000</span></div>
+
+                        <div class="report-row bg-blue-50 mt-1"><span class="report-label text-slate-700">Fore & Aft Mean (M1)</span><span class="report-value" id="rpt-f-m1">0.000</span></div>
+                        <div class="report-row bg-blue-50"><span class="report-label text-slate-700">Mean of Mean (M3)</span><span class="report-value" id="rpt-f-m3">0.000</span></div>
+
+                        <div class="report-row bg-slate-50 font-bold mt-1"><span class="report-label text-slate-900">Quarter Mean (QM)</span><span class="report-value" id="rpt-f-qm">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">III. DISPLACEMENT</div>
+                        <div class="report-row"><span class="report-label">Displacement (Table)</span><span class="report-value" id="rpt-f-disp">0.000</span></div>
+                        <div class="report-row"><span class="report-label">1st Trim Correction</span><span class="report-value text-blue-600" id="rpt-f-trim1">0.000</span></div>
+                        <div class="report-row"><span class="report-label">2nd Trim Correction</span><span class="report-value text-blue-600" id="rpt-f-trim2">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Density Correction</span><span class="report-value text-red-600" id="rpt-f-dens">0.000</span></div>
+                        <div class="report-row bg-slate-100 font-bold border-t border-slate-300"><span class="report-label text-slate-900">Corrected Disp.</span><span class="report-value" id="rpt-f-net">0.000</span></div>
+                        
+                        <div class="report-header-sub mt-2">IV. CARGO CALCULATION</div>
+                        <div class="report-row"><span class="report-label">Total Deductibles</span><span class="report-value text-red-600" id="rpt-f-ded">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Lightship</span><span class="report-value text-red-600" id="rpt-f-ls">0.000</span></div>
+                        <div class="report-row"><span class="report-label">Constant (Init)</span><span class="report-value text-yellow-600" id="rpt-f-const">0.000</span></div>
+                        
+                        <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-center shadow-sm">
+                            <span class="report-label block text-green-700 text-xs uppercase mb-1 font-bold">NET CARGO (MUATAN BERSIH)</span>
+                            <span class="report-value text-3xl text-green-900 font-extrabold" id="rpt-net-cargo">0.000 MT</span>
+                        </div>
+
+                        <div class="report-header-sub mt-4">V. INTERPRETASI HASIL</div>
+                        <div class="report-row border-none pb-0"><span class="report-value text-xs font-normal text-justify leading-relaxed text-slate-600" id="rpt-f-interpret">-</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PANDUAN (FULL LENGKAP) -->
+        <div id="guide" class="tab-content">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-800 mb-4">Panduan Lengkap Situbar</h2>
+
+                <div class="mb-6 bg-green-50 p-4 rounded border-l-4 border-green-500 text-sm text-slate-700">
+                    <h4 class="font-bold text-green-700 mb-2">Tahapan Pelaksanaan Draught Survey</h4>
+                    
+                    <div class="space-y-4">
+                        <!-- Tahap 1 -->
+                        <div class="bg-white p-3 rounded border border-green-100 shadow-sm">
+                            <span class="block font-bold text-green-800 mb-1">TAHAP I: Persiapan Dokumen</span>
+                            <p class="mb-2">Perhitungan draught survey dan mencari informasi kondisi kapal terkini. Dokumen-dokumen kapal meliputi:</p>
+                            <ul class="list-disc pl-5 grid grid-cols-1 md:grid-cols-2 gap-1 text-xs">
+                                <li>Ship Particular</li>
+                                <li>General Arrangement (GA Plan)</li>
+                                <li>Hydrostatic Table/Curve (Stability Booklet)</li>
+                                <li>Capacity Plan & Stowage</li>
+                                <li>Dead Weight Scale</li>
+                                <li>Tank Calibration Table (Sounding Table)</li>
+                                <li>Light Ship Information</li>
+                            </ul>
+                        </div>
+
+                        <!-- Tahap 2 -->
+                        <div class="bg-white p-3 rounded border border-green-100 shadow-sm">
+                            <span class="block font-bold text-green-800 mb-1">TAHAP II: Pembacaan Draft</span>
+                            <p class="mb-2">Pembacaan draught kapal di lambung kiri dan kanan pada 6 titik ukur:</p>
+                            <ul class="list-disc pl-5 text-xs">
+                                <li><strong>Forward (Haluan):</strong> Kiri & Kanan (Titik 1 & 2)</li>
+                                <li><strong>Midship (Tengah):</strong> Kiri & Kanan (Titik 3 & 4)</li>
+                                <li><strong>Afterpart (Buritan):</strong> Kiri & Kanan (Titik 5 & 6)</li>
+                            </ul>
+                            <div class="mt-2 p-2 bg-slate-100 rounded text-center text-xs text-slate-500 italic">
+                                <i class="fas fa-ship"></i> Ilustrasi: FWD (Depan) --- MID (Tengah) --- AFT (Belakang)
+                            </div>
+                        </div>
+
+                        <!-- Tahap 3 & 4 -->
+                        <div class="bg-white p-3 rounded border border-green-100 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="block font-bold text-green-800 mb-1">TAHAP III: Pengukuran Cairan</span>
+                                <p class="text-xs">Melakukan pengukuran (sounding) cairan-cairan yang ada diatas kapal:</p>
+                                <ul class="list-disc pl-5 text-xs mt-1">
+                                    <li>Fresh Water & Ballast Water</li>
+                                    <li>Fuel Oil & Diesel Oil</li>
+                                    <li>Lube Oil & Hydraulic Oil</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <span class="block font-bold text-green-800 mb-1">TAHAP IV: Pengukuran Density</span>
+                                <p class="text-xs">Mengukur density air perairan (Sea Water) dan density cairan lainnya (Ballast/BBM) menggunakan Hydrometer yang terkalibrasi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto mb-6">
+                    <table class="min-w-full text-xs text-left border rounded-lg">
+                        <thead class="bg-slate-100 uppercase">
+                            <tr><th class="p-3 border">Istilah Teknis</th><th class="p-3 border">Penjelasan & Fungsi</th><th class="p-3 border">Sumber Data</th></tr>
+                        </thead>
+                        <tbody class="divide-y text-slate-600">
+                            <tr>
+                                <td class="p-3 font-bold align-top">Draft Marks<br><span class="badge-visual">Input: Port/Stbd Draft</span></td>
+                                <td class="p-3 align-top">Angka kedalaman kapal di 6 titik ukur (Depan/Tengah/Belakang).</td>
+                                <td class="p-3 align-top"><a href="https://drive.google.com/file/d/179a3n2mGPquDTudF8R99dEwGYhOv_khe/view?usp=drive_link" target="_blank" class="text-blue-600 underline flex items-center gap-1"><i class="fas fa-binoculars"></i> Visual Lambung</a></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold align-top">Koreksi Garis Tegak<br><span class="badge-doc">Input: dF, dM, dA</span></td>
+                                <td class="p-3 align-top">Jarak koreksi karena posisi marka draft tidak tepat di garis tegak (Perpendicular).</td>
+                                <td class="p-3 align-top"><a href="https://www.google.com/search?q=ship+capacity+plan+perpendiculars&tbm=isch" target="_blank" class="text-blue-600 underline flex items-center gap-1"><i class="fas fa-file-alt"></i> Stability Booklet</a></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold align-top">Letak Marka Tengah<br><span class="badge-visual">Input: Plimsoll Mark Position</span></td>
+                                <td class="p-3 align-top">
+                                    Posisi tanda Plimsoll relatif terhadap tengah kapal (Midship):
+                                    <ul class="list-disc pl-4 mt-1">
+                                        <li><strong>Midle Draft Behind Midle Perpendicular:</strong> Posisi marka draft tengah terletak di <em>belakang</em> garis tegak tengah (Midship).</li>
+                                        <li><strong>Midle Draft Front Midle Perpendicular:</strong> Posisi marka draft tengah terletak di <em>depan</em> garis tegak tengah (Midship).</li>
+                                    </ul>
+                                </td>
+                                <td class="p-3 align-top"><a href="https://www.google.com/search?q=general+arrangement+plan+ship+midship&tbm=isch" target="_blank" class="text-blue-600 underline flex items-center gap-1"><i class="fas fa-ship"></i> GA Plan</a></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold align-top">Hydrostatic<br><span class="badge-calc">Input: Disp, LCF, TPC...</span></td>
+                                <td class="p-3 align-top">Tabel teknis kapal (Displacement, LCF, TPC, MTC) untuk setiap sentimeter draft.</td>
+                                <td class="p-3 align-top"><a href="https://www.google.com/search?q=hydrostatic+table+ship&tbm=isch" target="_blank" class="text-blue-600 underline flex items-center gap-1"><i class="fas fa-table"></i> Hydrostatic Book</a></td>
+                            </tr>
+                             <tr>
+                                <td class="p-3 font-bold align-top">Deductibles<br><span class="badge-visual">Input: Cairan</span></td>
+                                <td class="p-3 align-top">Berat cairan pengurang (BBM, Air Tawar, Ballast) yang ada di tangki.</td>
+                                <td class="p-3 align-top"><a href="https://www.google.com/search?q=ship+sounding+table&tbm=isch" target="_blank" class="text-blue-600 underline flex items-center gap-1"><i class="fas fa-ruler"></i> Sounding Tank</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500 mb-6 text-sm text-slate-700">
+                    <h4 class="font-bold text-blue-700 mb-2">Metode Perhitungan Situbar</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>LBM:</strong> LBP - dF - dA</li>
+                        <li><strong>True Trim:</strong> Apparent Trim × (LBP / LBM)</li>
+                        <li><strong>QM (Mean of Means):</strong> (Fwd + 6×Mid + Aft) / 8</li>
+                        <li><strong>Trim Corr (Total):</strong> (1st + 2nd Nemoto)</li>
+                        <li><strong>Density Corr:</strong> Disp_Trimmed × (1.025 - Density) / 1.025</li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 bg-purple-50 p-4 rounded border-l-4 border-purple-500 text-sm text-slate-700">
+                     <h4 class="font-bold text-purple-700 mb-2">Penjelasan MTC 1 & MTC 2 (Nemoto)</h4>
+                     <p>Untuk perhitungan koreksi kedua (Nemoto), aplikasi memerlukan data MTC pada draft +/- 50cm dari Quarter Mean:</p>
+                     <ul class="list-disc pl-4 mt-2">
+                         <li><strong>MTC 1:</strong> Nilai MTC pada draft <strong>(QM + 0.50 m)</strong>.</li>
+                         <li><strong>MTC 2:</strong> Nilai MTC pada draft <strong>(QM - 0.50 m)</strong>.</li>
+                     </ul>
+                     <p class="mt-2 text-xs italic">*Ini digunakan untuk mendapatkan nilai perubahan MTC (dM/dZ) yang akurat.</p>
+                </div>
+
+                <div class="mb-6 bg-orange-50 p-4 rounded border-l-4 border-orange-500 text-sm text-slate-700">
+                    <h4 class="font-bold text-orange-700 mb-2">Metric vs Imperial System</h4>
+                    <p class="mb-3">Draught Survey dapat dilakukan menggunakan dua sistem satuan yang berbeda. Penting untuk mengetahui sistem mana yang digunakan oleh kapal (cek Hydrostatic Table).</p>
+                    
+                    <div class="overflow-x-auto bg-white rounded border border-orange-200 mb-3">
+                        <table class="min-w-full text-xs text-left">
+                            <thead class="bg-orange-100 font-bold text-orange-800">
+                                <tr>
+                                    <th class="p-2 border-r border-orange-200">Parameter</th>
+                                    <th class="p-2 border-r border-orange-200">Metric System (SI)</th>
+                                    <th class="p-2">Imperial System</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-orange-100">
+                                <tr>
+                                    <td class="p-2 font-semibold border-r border-orange-100">Draft/LBP</td>
+                                    <td class="p-2 border-r border-orange-100">Meters (m)</td>
+                                    <td class="p-2">Feet (ft) & Inches</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-semibold border-r border-orange-100">Berat (Weight)</td>
+                                    <td class="p-2 border-r border-orange-100">Metric Ton (MT) = 1000 kg</td>
+                                    <td class="p-2">Long Ton (LT) = 1016 kg</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-semibold border-r border-orange-100">Immersion</td>
+                                    <td class="p-2 border-r border-orange-100">TPC (Tonnes per Centimeter)</td>
+                                    <td class="p-2">TPI (Tons per Inch)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-semibold border-r border-orange-100">Moment Trim</td>
+                                    <td class="p-2 border-r border-orange-100">MTC (Moment to Change 1cm)</td>
+                                    <td class="p-2">MTI (Moment to Change 1 inch)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex items-start gap-2 text-xs bg-white p-2 rounded border border-orange-200">
+                        <i class="fas fa-info-circle text-orange-500 mt-0.5"></i>
+                        <p><strong>Status Saat Ini:</strong> Sistem <span class="font-bold text-orange-700">METRIC</span> adalah standar internasional yang paling banyak digunakan di dunia maritim modern. Namun, sistem Imperial masih sering ditemukan pada kapal-kapal tua atau kapal yang beroperasi di wilayah tertentu (seperti Amerika Serikat).</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                     <h4 class="font-bold text-slate-800">FAQ</h4>
+                     <div class="bg-yellow-50 p-3 border border-yellow-200 rounded">
+                        <span class="font-bold text-yellow-800">Q: Apa itu Constant?</span>
+                        <p class="mt-1">Berat tetap non-cargo (lumpur, stok, dll). Rumus: Net Disp Initial - Lightship - Deductibles.</p>
+                     </div>
+                     <div class="bg-red-50 p-3 border border-red-200 rounded">
+                        <span class="font-bold text-red-800">Q: Kenapa Constant Negatif?</span>
+                        <p class="mt-1">Input Lightship terlalu besar atau Sounding cairan over-estimated dari kondisi asli.</p>
+                     </div>
+                     <div class="bg-green-50 p-3 border border-green-200 rounded">
+                        <span class="font-bold text-green-800">Q: Draft Initial vs Final?</span>
+                        <p class="mt-1">Pasti beda. Selisih volume air yang dipindahkan adalah berat muatan.</p>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: LATIHAN -->
+        <div id="latihan" class="tab-content">
+            <div id="latihan-locked" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg border border-slate-200 text-center mt-8">
+                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                     <i class="fas fa-lock text-blue-600 text-2xl"></i>
+                 </div>
+                 <h2 class="text-xl font-bold text-slate-800 mb-2">Mode Latihan Terkunci</h2>
+                 <p class="text-sm text-slate-500 mb-6">Silahkan masukkan kredensial khusus untuk mengakses soal latihan Draught Survey.</p>
+                 
+                 <div class="space-y-4 text-left">
+                     <div>
+                         <label class="block text-xs font-bold text-slate-500 mb-1">USERNAME</label>
+                         <input type="text" id="lat-user" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Username">
+                     </div>
+                     <div>
+                         <label class="block text-xs font-bold text-slate-500 mb-1">PASSWORD</label>
+                         <input type="password" id="lat-pass" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Password" onkeypress="if(event.key==='Enter') checkLatihanAuth()">
+                     </div>
+                     <div id="lat-error" class="hidden text-xs text-red-600 font-bold bg-red-50 p-2 rounded border border-red-100 flex items-center gap-2">
+                         <i class="fas fa-exclamation-triangle"></i> <span>Username atau Password Salah!</span>
+                     </div>
+                     <button onclick="checkLatihanAuth()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition transform active:scale-95">BUKA SOAL LATIHAN</button>
+                 </div>
+            </div>
+
+            <div id="latihan-unlocked" class="hidden space-y-6">
+                <div class="glass-card">
+                    <div class="card-header justify-between">
+                         <span><i class="fas fa-chalkboard-teacher text-blue-500"></i> Generator Soal Latihan</span>
+                         <button onclick="generateLatihanSoal()" class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold hover:bg-blue-200 transition">
+                             <i class="fas fa-sync-alt"></i> Soal Baru
+                         </button>
+                    </div>
+                    <div class="p-6">
+                         <div id="soal-container" class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-6">
+                             <div class="text-center py-8">
+                                 <i class="fas fa-clipboard-list text-4xl text-slate-300 mb-4"></i>
+                                 <p class="text-slate-500 italic">Klik tombol "Soal Baru" di pojok kanan atas untuk memulai latihan.</p>
+                             </div>
+                         </div>
+                         
+                         <div id="answer-section" class="hidden opacity-0 transition-opacity duration-500">
+                             <label class="block text-sm font-bold text-slate-700 mb-2">Jawaban Anda:</label>
+                             <div class="flex gap-2">
+                                 <input type="number" step="0.001" id="user-answer" class="flex-1 border border-slate-300 rounded-lg px-4 py-2 font-mono text-lg font-bold text-blue-600 text-center" placeholder="0.000">
+                                 <button onclick="checkAnswer()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow transition transform active:scale-95">CEK JAWABAN</button>
+                             </div>
+                             <div id="feedback-msg" class="mt-4 hidden p-4 rounded-lg text-sm font-bold flex items-center gap-3"></div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: SOAL SIMULASI -->
+        <div id="soal-simulasi" class="tab-content">
+            <div class="glass-card">
+                <div class="card-header flex justify-between items-center">
+                    <div><i class="fas fa-file-pdf text-red-500"></i> Simulasi Perhitungan Manual</div>
+                    <div class="flex gap-2">
+                        <button onclick="loadSimData()" class="bg-green-100 text-green-700 px-3 py-1 rounded text-xs font-bold hover:bg-green-200 transition">
+                            <i class="fas fa-file-import"></i> Load Data Soal
+                        </button>
+                        <div class="text-xs font-normal bg-blue-100 text-blue-800 px-2 py-1 rounded">Studi Kasus</div>
+                    </div>
+                </div>
+                
+                <div class="p-4 grid lg:grid-cols-2 gap-6">
+                    <!-- LEFT COLUMN: IMAGE VIEWER -->
+                    <div class="space-y-4">
+                        <div class="bg-slate-900 rounded-lg p-2 shadow-inner relative group">
+                            <img id="sim-image-viewer" src="images/DRAUGHT SURVEY - MANUAL CALCULATION_page-0001.jpg" class="w-full h-auto max-h-[600px] object-contain rounded bg-white" alt="Soal Simulasi">
+                            
+                            <!-- Navigation Overlay -->
+                            <div class="absolute inset-0 flex justify-between items-center p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="changeSimPage(-1)" class="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="changeSimPage(1)" class="bg-black/50 hover:bg-black/70 text-white p-3 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center bg-slate-100 p-2 rounded">
+                            <button onclick="changeSimPage(-1)" class="bg-white border border-slate-300 px-3 py-1 rounded hover:bg-slate-50 text-sm font-bold"><i class="fas fa-arrow-left"></i> Prev</button>
+                            <span class="font-bold text-slate-600" id="sim-page-indicator">Halaman 1 / 19</span>
+                            <button onclick="changeSimPage(1)" class="bg-white border border-slate-300 px-3 py-1 rounded hover:bg-slate-50 text-sm font-bold">Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: WORKSHEET -->
+                    <div class="space-y-6 h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                            <h3 class="font-bold text-yellow-800 text-sm">Instruksi</h3>
+                            <p class="text-xs text-yellow-700">Gunakan data dari gambar di samping. Masukkan data Draft, LBP, dan Hydrostatic Table. Sistem akan menghitung koreksi Trim & Density secara otomatis.</p>
+                        </div>
+
+                        <!-- WORKSHEET FORM -->
+                        <div id="sim-worksheet" class="space-y-8">
+                            
+                            <!-- SHIP PARTICULARS -->
+                            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                                <h4 class="font-bold text-slate-700 mb-3 border-b pb-1">Ship Particulars & Distances</h4>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div><label class="lbl">LBP (m)</label><input type="number" id="sim-lbp" class="inp" placeholder="0.00"></div>
+                                    <div><label class="lbl">Lightship (MT)</label><input type="number" id="sim-lightship" class="inp" placeholder="0.00"></div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="lbl">dF (m)</label>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="sim-df" class="inp" placeholder="Fwd to FP">
+                                            <select id="sim-df-pos" class="inp py-0 h-6 text-[10px]">
+                                                <option value="behind">Behind FP (Belakang)</option>
+                                                <option value="ahead">Ahead of FP (Depan)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="lbl">dM (m)</label>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="sim-dm" class="inp" placeholder="Mid to Midship">
+                                            <select id="sim-plimsoll" class="inp py-0 h-6 text-[10px]">
+                                                <option value="behind">Behind Mid (Belakang)</option>
+                                                <option value="ahead">Ahead of Mid (Depan)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="lbl">dA (m)</label>
+                                        <div class="flex flex-col gap-1">
+                                            <input type="number" id="sim-da" class="inp" placeholder="Aft to AP">
+                                            <select id="sim-da-pos" class="inp py-0 h-6 text-[10px]">
+                                                <option value="ahead">Ahead of AP (Depan)</option>
+                                                <option value="behind">Behind AP (Belakang)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- INITIAL SURVEY -->
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 shadow-sm">
+                                <h4 class="font-bold text-blue-800 mb-3 flex justify-between">
+                                    1. Initial Survey
+                                    <span class="text-xs bg-blue-200 px-2 py-0.5 rounded text-blue-800">CONSTANT</span>
+                                </h4>
+                                
+                                <!-- Drafts -->
+                                <div class="grid grid-cols-3 gap-2 mb-4">
+                                    <div class="text-center"><label class="lbl">Fwd (P)</label><input type="number" id="sim-i-fp" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Mid (P)</label><input type="number" id="sim-i-mp" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Aft (P)</label><input type="number" id="sim-i-ap" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Fwd (S)</label><input type="number" id="sim-i-fs" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Mid (S)</label><input type="number" id="sim-i-ms" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Aft (S)</label><input type="number" id="sim-i-as" class="inp text-center" placeholder="0.00"></div>
+                                </div>
+
+                                <!-- Hydro Data -->
+                                <div class="bg-white p-3 rounded mb-3">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="lbl text-blue-600">Mean Draft Corrected:</label>
+                                        <span id="sim-i-mean-res" class="font-mono font-bold">0.000</span>
+                                    </div>
+                                    
+                                    <!-- Q1 Q2 Display -->
+                                    <div class="grid grid-cols-2 gap-4 mb-3 text-xs bg-slate-50 p-2 rounded border border-slate-100">
+                                        <div class="text-center">
+                                            <span class="block text-slate-500 font-bold">Q1 (Lower)</span>
+                                            <input type="number" id="sim-i-q1" class="inp text-center text-blue-600 font-bold" placeholder="Q1">
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="block text-slate-500 font-bold">Q2 (Upper)</span>
+                                            <input type="number" id="sim-i-q2" class="inp text-center text-blue-600 font-bold" placeholder="Q2">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">Disp 1</label><input type="number" id="sim-i-disp1" class="inp" placeholder="Disp Q1"></div>
+                                        <div><label class="lbl">Disp 2</label><input type="number" id="sim-i-disp2" class="inp" placeholder="Disp Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">LCF 1</label><input type="number" id="sim-i-lcf1" class="inp" placeholder="LCF Q1"></div>
+                                        <div><label class="lbl">LCF 2</label><input type="number" id="sim-i-lcf2" class="inp" placeholder="LCF Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">TPC 1</label><input type="number" id="sim-i-tpc1" class="inp" placeholder="TPC Q1"></div>
+                                        <div><label class="lbl">TPC 2</label><input type="number" id="sim-i-tpc2" class="inp" placeholder="TPC Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">MTC1 (Q1)</label><input type="number" id="sim-i-mtc1-1" class="inp" placeholder="MTC1 Q1"></div>
+                                        <div><label class="lbl">MTC1 (Q2)</label><input type="number" id="sim-i-mtc1-2" class="inp" placeholder="MTC1 Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">MTC2 (Q1)</label><input type="number" id="sim-i-mtc2-1" class="inp" placeholder="MTC2 Q1"></div>
+                                        <div><label class="lbl">MTC2 (Q2)</label><input type="number" id="sim-i-mtc2-2" class="inp" placeholder="MTC2 Q2"></div>
+                                    </div>
+                                    
+                                    <!-- Corrections Display -->
+                                    <div class="mt-3 pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                                        <div><span class="block text-slate-400">Trim Corr 1:</span> <span id="sim-i-trim1" class="font-bold font-mono">0.000</span></div>
+                                        <div><span class="block text-slate-400">Trim Corr 2:</span> <span id="sim-i-trim2" class="font-bold font-mono">0.000</span></div>
+                                        <div><span class="block text-slate-400">Total Trim:</span> <span id="sim-i-trim-tot" class="font-bold font-mono text-blue-600">0.000</span></div>
+                                        <div><span class="block text-slate-400">Density Corr:</span> <span id="sim-i-dens-corr" class="font-bold font-mono text-red-600">0.000</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Deductibles & Density -->
+                                <div class="bg-blue-100 p-3 rounded mb-3">
+                                    <label class="lbl font-bold mb-2 block">Deductibles Breakdown</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div><label class="text-[10px] text-slate-500 font-bold">FW</label><input type="number" id="sim-i-fw" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">BW</label><input type="number" id="sim-i-bw" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">FO</label><input type="number" id="sim-i-fo" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">DO</label><input type="number" id="sim-i-do" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">LO</label><input type="number" id="sim-i-lo" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">Other</label><input type="number" id="sim-i-other" class="inp" placeholder="0"></div>
+                                    </div>
+                                    <div class="mt-2 text-right text-xs font-bold text-slate-600">Total Deductibles: <span id="sim-i-ded-total">0.000</span> MT</div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 gap-3">
+                                    <div><label class="lbl">Observed Density</label><input type="number" id="sim-i-dens" class="inp" placeholder="1.025"></div>
+                                </div>
+
+                                <!-- Result -->
+                                <div class="mt-4 pt-3 border-t border-blue-200">
+                                    <div class="flex justify-between text-sm font-bold">
+                                        <span>CALC CONSTANT:</span>
+                                        <span id="sim-i-const-final" class="text-blue-700 text-lg">0.000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FINAL SURVEY -->
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200 shadow-sm">
+                                <h4 class="font-bold text-green-800 mb-3 flex justify-between">
+                                    2. Final Survey
+                                    <span class="text-xs bg-green-200 px-2 py-0.5 rounded text-green-800">CARGO</span>
+                                </h4>
+                                
+                                <!-- Drafts -->
+                                <div class="grid grid-cols-3 gap-2 mb-4">
+                                    <div class="text-center"><label class="lbl">Fwd (P)</label><input type="number" id="sim-f-fp" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Mid (P)</label><input type="number" id="sim-f-mp" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Aft (P)</label><input type="number" id="sim-f-ap" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Fwd (S)</label><input type="number" id="sim-f-fs" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Mid (S)</label><input type="number" id="sim-f-ms" class="inp text-center" placeholder="0.00"></div>
+                                    <div class="text-center"><label class="lbl">Aft (S)</label><input type="number" id="sim-f-as" class="inp text-center" placeholder="0.00"></div>
+                                </div>
+
+                                <!-- Hydro Data -->
+                                <div class="bg-white p-3 rounded mb-3">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="lbl text-green-600">Mean Draft Corrected:</label>
+                                        <span id="sim-f-mean-res" class="font-mono font-bold">0.000</span>
+                                    </div>
+
+                                    <!-- Q1 Q2 Display -->
+                                    <div class="grid grid-cols-2 gap-4 mb-3 text-xs bg-slate-50 p-2 rounded border border-slate-100">
+                                        <div class="text-center">
+                                            <span class="block text-slate-500 font-bold">Q1 (Lower)</span>
+                                            <input type="number" id="sim-f-q1" class="inp text-center text-green-600 font-bold" placeholder="Q1">
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="block text-slate-500 font-bold">Q2 (Upper)</span>
+                                            <input type="number" id="sim-f-q2" class="inp text-center text-green-600 font-bold" placeholder="Q2">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">Disp 1</label><input type="number" id="sim-f-disp1" class="inp" placeholder="Disp Q1"></div>
+                                        <div><label class="lbl">Disp 2</label><input type="number" id="sim-f-disp2" class="inp" placeholder="Disp Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">LCF 1</label><input type="number" id="sim-f-lcf1" class="inp" placeholder="LCF Q1"></div>
+                                        <div><label class="lbl">LCF 2</label><input type="number" id="sim-f-lcf2" class="inp" placeholder="LCF Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">TPC 1</label><input type="number" id="sim-f-tpc1" class="inp" placeholder="TPC Q1"></div>
+                                        <div><label class="lbl">TPC 2</label><input type="number" id="sim-f-tpc2" class="inp" placeholder="TPC Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">MTC1 (Q1)</label><input type="number" id="sim-f-mtc1-1" class="inp" placeholder="MTC1 Q1"></div>
+                                        <div><label class="lbl">MTC1 (Q2)</label><input type="number" id="sim-f-mtc1-2" class="inp" placeholder="MTC1 Q2"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div><label class="lbl">MTC2 (Q1)</label><input type="number" id="sim-f-mtc2-1" class="inp" placeholder="MTC2 Q1"></div>
+                                        <div><label class="lbl">MTC2 (Q2)</label><input type="number" id="sim-f-mtc2-2" class="inp" placeholder="MTC2 Q2"></div>
+                                    </div>
+                                    
+                                    <!-- Corrections Display -->
+                                    <div class="mt-3 pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                                        <div><span class="block text-slate-400">Trim Corr 1:</span> <span id="sim-f-trim1" class="font-bold font-mono">0.000</span></div>
+                                        <div><span class="block text-slate-400">Trim Corr 2:</span> <span id="sim-f-trim2" class="font-bold font-mono">0.000</span></div>
+                                        <div><span class="block text-slate-400">Total Trim:</span> <span id="sim-f-trim-tot" class="font-bold font-mono text-green-600">0.000</span></div>
+                                        <div><span class="block text-slate-400">Density Corr:</span> <span id="sim-f-dens-corr" class="font-bold font-mono text-red-600">0.000</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Deductibles & Density -->
+                                <div class="bg-green-100 p-3 rounded mb-3">
+                                    <label class="lbl font-bold mb-2 block">Deductibles Breakdown</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div><label class="text-[10px] text-slate-500 font-bold">FW</label><input type="number" id="sim-f-fw" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">BW</label><input type="number" id="sim-f-bw" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">FO</label><input type="number" id="sim-f-fo" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">DO</label><input type="number" id="sim-f-do" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">LO</label><input type="number" id="sim-f-lo" class="inp" placeholder="0"></div>
+                                        <div><label class="text-[10px] text-slate-500 font-bold">Other</label><input type="number" id="sim-f-other" class="inp" placeholder="0"></div>
+                                    </div>
+                                    <div class="mt-2 text-right text-xs font-bold text-slate-600">Total Deductibles: <span id="sim-f-ded-total">0.000</span> MT</div>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-3">
+                                    <div><label class="lbl">Observed Density</label><input type="number" id="sim-f-dens" class="inp" placeholder="1.025"></div>
+                                </div>
+
+                                <!-- Result -->
+                                <div class="mt-4 pt-3 border-t border-green-200">
+                                    <div class="flex justify-between text-sm font-bold">
+                                        <span>NET CARGO:</span>
+                                        <span id="sim-f-cargo-final" class="text-green-700 text-lg">0.000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="calcSim()" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg shadow hover:bg-slate-900 transition">
+                                <i class="fas fa-calculator"></i> HITUNG SEMUA
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 text-center text-sm border-t border-slate-800">
+        <p>Created by <span class="text-white font-semibold">Epiphania Rino, PDAD Beacukai Banjarmasin</span></p>
+        <p class="text-xs mt-1">Date: 21/1/2026</p>
+    </footer>
+
+    <!-- AI ASSISTANT FLOAT & MODAL -->
+    <button onclick="toggleChat()" class="fixed bottom-6 right-4 md:right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 md:p-4 rounded-full shadow-lg transition-transform hover:scale-110 z-50 flex items-center justify-center">
+        <i class="fas fa-robot text-xl md:text-2xl"></i>
+    </button>
+
+    <div id="chat-window" class="fixed bottom-20 md:bottom-24 right-2 left-2 md:left-auto md:right-6 w-auto md:w-96 h-96 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 hidden flex flex-col opacity-0 scale-90 transform origin-bottom-right">
+        <!-- Header -->
+        <div class="bg-blue-600 text-white p-3 md:p-4 rounded-t-xl flex justify-between items-center shadow-md">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-robot"></i>
+                <span class="font-bold text-sm md:text-base">Asisten Simulasi Situbar BC Banjarmasin</span>
+            </div>
+            <button onclick="toggleChat()" class="hover:text-gray-200 transition-colors"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <!-- Messages -->
+        <div id="chat-messages" class="flex-1 p-3 md:p-4 overflow-y-auto bg-slate-50 space-y-3 text-sm">
+            <!-- Welcome Message -->
+            <div class="flex justify-start">
+                <div class="bg-white border border-slate-200 text-slate-700 p-3 rounded-lg rounded-tl-none max-w-[85%] shadow-sm prose">
+                    Halo! Saya Asisten AI Simulasi Situbar BC Banjarmasin. 🤖
+                    <br><br>
+                    Tanyakan apa saja tentang Draught Survey, istilah teknis, atau cara perhitungan!
+                </div>
+            </div>
+        </div>
+    
+        <!-- Input -->
+        <div class="p-3 border-t border-slate-200 bg-white rounded-b-xl">
+            <div class="flex gap-2">
+                <input type="text" id="chat-input" onkeypress="handleEnter(event)" placeholder="Tanya sesuatu..." class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors text-base md:text-sm">
+                <button onclick="sendMessage()" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC UTAMA ---
+        let currentConstant = 0; 
+        let isImperial = false;
+
+        function toggleUnit() {
+            isImperial = !isImperial;
+            const btn = document.getElementById('btn-unit');
+            if(isImperial) {
+                btn.innerHTML = '<i class="fas fa-ruler-combined"></i> IMPERIAL SYSTEM';
+                btn.className = "bg-rose-100 text-rose-800 border border-rose-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-rose-200 transition flex items-center gap-2 shadow-sm";
+            } else {
+                btn.innerHTML = '<i class="fas fa-balance-scale"></i> METRIC SYSTEM';
+                btn.className = "bg-teal-100 text-teal-800 border border-teal-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-teal-200 transition flex items-center gap-2 shadow-sm";
+            }
+            updateLabels();
+            resetAllData(); // Reset data to avoid confusion with units
+            alert("Mode Unit diubah ke " + (isImperial ? "IMPERIAL (Feet/Long Ton)" : "METRIC (Meters/Metric Ton)") + ".\nData dikosongkan.");
+        }
+
+        function updateLabels() {
+            // Update placeholders and labels dynamically
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(i => {
+                if(i.placeholder.includes('Disp')) i.placeholder = isImperial ? 'Disp (LT)' : 'Disp (MT)';
+                if(i.placeholder.includes('TPC')) i.placeholder = isImperial ? 'TPI' : 'TPC';
+                if(i.placeholder.includes('MTC')) i.placeholder = isImperial ? 'MTI' : 'MTC';
+            });
+            
+            // Density Label
+            const densLabels = document.querySelectorAll('label');
+            densLabels.forEach(l => {
+                if(l.innerText.includes('DENSITY')) l.innerText = isImperial ? 'DENSITY (SG)' : 'DENSITY (MT/M3)';
+                if(l.innerText.includes('LBP')) l.innerText = isImperial ? 'LBP (Feet)' : 'LBP (Meters)';
+            });
+
+            // Update Report Units
+            const cargoUnit = document.getElementById('val-cargo');
+            if(cargoUnit && cargoUnit.innerText.includes('MT')) {
+                 // update logic will handle this on calc
+            }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            ['initial','final','report','guide','latihan','soal-simulasi'].forEach(t => {
+                 const btn = document.getElementById('btn-'+t);
+                 if(t===id) {
+                     btn.className = 'px-5 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600 transition flex items-center gap-2 bg-white rounded-t-lg';
+                 } else {
+                     btn.className = 'px-5 py-3 text-sm font-bold text-slate-500 hover:text-blue-600 transition flex items-center gap-2';
+                 }
+            });
+        }
+
+        // --- LATIHAN LOGIC ---
+        let currentSoal = null;
+
+        function checkLatihanAuth() {
+            const u = document.getElementById('lat-user').value;
+            const p = document.getElementById('lat-pass').value;
+            const err = document.getElementById('lat-error');
+            
+            if(u.toLowerCase() === 'pdad' && p.toLowerCase() === 'beacukai') {
+                document.getElementById('latihan-locked').classList.add('hidden');
+                document.getElementById('latihan-unlocked').classList.remove('hidden');
+            } else {
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2000);
+            }
+        }
+
+        function generateLatihanSoal() {
+            const type = Math.floor(Math.random() * 3); // 0: QM, 1: Trim1, 2: NetDisp
+            let question = "", answer = 0, hint = "";
+            
+            if(type === 0) { // Calculate Quarter Mean
+                const fwd = parseFloat(r(3,5));
+                const mid = parseFloat(r(4,6));
+                const aft = parseFloat(r(5,7));
+                
+                question = `<div class="text-center space-y-4">
+                    <h3 class="font-bold text-lg text-slate-800">Hitung Quarter Mean (QM)</h3>
+                    <div class="grid grid-cols-3 gap-2 text-sm font-mono bg-white p-4 rounded border border-slate-200">
+                        <div><div class="text-slate-400 text-xs">Fwd Corrected</div><div class="font-bold text-blue-600">${fwd.toFixed(3)}</div></div>
+                        <div><div class="text-slate-400 text-xs">Mid Corrected</div><div class="font-bold text-blue-600">${mid.toFixed(3)}</div></div>
+                        <div><div class="text-slate-400 text-xs">Aft Corrected</div><div class="font-bold text-blue-600">${aft.toFixed(3)}</div></div>
+                    </div>
+                    <p class="text-xs text-slate-500">Rumus: (Fwd + 6*Mid + Aft) / 8</p>
+                </div>`;
+                
+                answer = (fwd + 6*mid + aft) / 8;
+                hint = "Ingat, Midship dikalikan 6!";
+            
+            } else if(type === 1) { // Calculate First Trim Correction
+                const trim = parseFloat(r(0.5, 2.0));
+                const lcf = parseFloat(r(70, 75));
+                const tpc = parseFloat(r(30, 40));
+                const lbp = parseFloat(r(170, 180));
+                
+                question = `<div class="text-center space-y-4">
+                    <h3 class="font-bold text-lg text-slate-800">Hitung Koreksi Trim Pertama (Metric)</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm font-mono bg-white p-4 rounded border border-slate-200">
+                        <div class="text-left"><span class="text-slate-500">True Trim:</span> <span class="font-bold text-blue-600">${trim.toFixed(2)} m</span></div>
+                        <div class="text-left"><span class="text-slate-500">LCF:</span> <span class="font-bold text-blue-600">${lcf.toFixed(2)} m</span></div>
+                        <div class="text-left"><span class="text-slate-500">TPC:</span> <span class="font-bold text-blue-600">${tpc.toFixed(2)} MT/cm</span></div>
+                        <div class="text-left"><span class="text-slate-500">LBP:</span> <span class="font-bold text-blue-600">${lbp.toFixed(2)} m</span></div>
+                    </div>
+                    <p class="text-xs text-slate-500">Rumus: (Trim * LCF * TPC * 100) / LBP</p>
+                </div>`;
+                
+                answer = (trim * lcf * tpc * 100) / lbp;
+                hint = "Hati-hati dengan pengali 100 untuk konversi cm ke m.";
+            
+            } else { // Calculate Net Displacement
+                const disp = parseFloat(r(30000, 40000));
+                const dens = parseFloat(r(1.000, 1.020, 3));
+                
+                question = `<div class="text-center space-y-4">
+                    <h3 class="font-bold text-lg text-slate-800">Hitung Net Displacement (Koreksi Density)</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm font-mono bg-white p-4 rounded border border-slate-200">
+                        <div class="text-left"><span class="text-slate-500">Disp (Hydro):</span> <span class="font-bold text-blue-600">${disp.toFixed(1)} MT</span></div>
+                        <div class="text-left"><span class="text-slate-500">Observed Density:</span> <span class="font-bold text-blue-600">${dens.toFixed(3)}</span></div>
+                    </div>
+                    <p class="text-xs text-slate-500">Std Density: 1.025. Rumus: Disp * (1.025 - Dens) / 1.025</p>
+                </div>`;
+                
+                // Correction
+                const corr = disp * (1.025 - dens) / 1.025;
+                answer = disp - corr; // Net Disp
+                hint = "Hitung koreksi density dulu, lalu kurangkan dari Displacement awal.";
+            }
+
+            currentSoal = { answer: answer, hint: hint, type: type };
+            document.getElementById('soal-container').innerHTML = question;
+            document.getElementById('answer-section').classList.remove('hidden', 'opacity-0');
+            document.getElementById('answer-section').classList.add('opacity-100');
+            
+            // Reset fields
+            document.getElementById('user-answer').value = '';
+            document.getElementById('feedback-msg').classList.add('hidden');
+            document.getElementById('user-answer').classList.remove('border-red-500', 'border-green-500', 'bg-red-50', 'bg-green-50');
+        }
+
+        function checkAnswer() {
+            if(!currentSoal) return;
+            const userVal = parseFloat(document.getElementById('user-answer').value);
+            const correctVal = currentSoal.answer;
+            const tolerance = 0.05 * correctVal; // 5% tolerance
+            
+            const msgEl = document.getElementById('feedback-msg');
+            const inputEl = document.getElementById('user-answer');
+            
+            msgEl.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            inputEl.classList.remove('border-red-500', 'border-green-500', 'bg-red-50', 'bg-green-50');
+            
+            if(Math.abs(userVal - correctVal) <= Math.abs(tolerance) || Math.abs(userVal - correctVal) < 0.1) {
+                // Correct
+                msgEl.classList.add('bg-green-100', 'text-green-700');
+                const displayDec = currentSoal.type === 0 ? 6 : 3;
+                msgEl.innerHTML = `<i class="fas fa-check-circle text-xl"></i> <div><strong>Benar!</strong><br>Jawaban presisi: ${correctVal.toFixed(displayDec)}</div>`;
+                inputEl.classList.add('border-green-500', 'bg-green-50');
+            } else {
+                // Incorrect
+                msgEl.classList.add('bg-red-100', 'text-red-700');
+                msgEl.innerHTML = `<i class="fas fa-times-circle text-xl"></i> <div><strong>Salah.</strong><br>${currentSoal.hint}</div>`;
+                inputEl.classList.add('border-red-500', 'bg-red-50');
+            }
+        }
+
+        // Helper
+        function gV(id) { const v=parseFloat(document.getElementById(id)?.value); return isNaN(v)?0:v; }
+        function sT(id,v) { const el=document.getElementById(id); if(el) el.innerText=v.toLocaleString('en-US',{minimumFractionDigits:3}); }
+        function sQM(id,v) { const el=document.getElementById(id); if(el) el.innerText=v.toLocaleString('en-US',{minimumFractionDigits:6, maximumFractionDigits:6}); }
+        function sV(id,v) { const el=document.getElementById(id); if(el) { el.value=v; el.classList.add('updated'); setTimeout(()=>el.classList.remove('updated'),500); } }
+        function r(min,max,dec=2) { return (Math.random()*(max-min)+min).toFixed(dec); }
+
+        function resetAllData() {
+            document.querySelectorAll('input').forEach(i => i.value = '');
+            document.querySelectorAll('[id^="res-"], [id^="rpt-"], [id^="val-"], [id$="-res"], [id$="-ded"]').forEach(s => s.innerText = '0.000');
+            CONSTANT = 0;
+            alert("Data berhasil dikosongkan!");
+        }
+
+        function generateAllData(isInitial = false) {
+            if (isInitial) {
+                // Clear Final Survey Data explicitly to prevent browser auto-fill retention
+                document.querySelectorAll('[id^="f-"]').forEach(el => {
+                    if(el.tagName === 'INPUT' || el.tagName === 'SELECT') el.value = '';
+                });
+                document.querySelectorAll('[id^="res-f-"], [id^="rpt-f-"]').forEach(el => el.innerText = '0.000');
+            }
+
+            if(isImperial) {
+                // Imperial Generation
+                const lbp = r(560,600); const ls = r(4900,5500); const dens = 1.025; // LS in LT
+                sV('ship-name', 'MV. IMPERIAL-' + Math.floor(Math.random()*1000));
+                
+                const dF = r(1.5, 8.0); const dM = r(0.0, 5.0); const dA = r(10.0, 20.0); // Feet
+                
+                const surveys = isInitial ? ['i'] : ['i', 'f'];
+                surveys.forEach(p => {
+                    sV(p+'-lbp', lbp); sV(p+'-lightship', ls); sV(p+'-density', dens);
+                    sV(p+'-df', dF); sV(p+'-dm', dM); sV(p+'-da', dA);
+                    sV(p+'-fw', r(50,200)); sV(p+'-bw', p==='i'?r(2000,4000):r(100,500)); 
+                    sV(p+'-fo', r(300,600)); sV(p+'-do', r(40,100)); 
+                    sV(p+'-lo', r(10,50)); sV(p+'-other', r(0,10));
+                });
+
+                // Initial Drafts (Feet)
+                const iD = parseFloat(r(10.5, 12.5));
+                sV('i-fp', (iD-0.6).toFixed(2)); sV('i-mp', iD.toFixed(2)); sV('i-ap', (iD+1.2).toFixed(2));
+                sV('i-fs', (iD-0.5).toFixed(2)); sV('i-ms', iD.toFixed(2)); sV('i-as', (iD+1.3).toFixed(2));
+                
+                // Hydro I (Imperial)
+                const qmI = parseFloat((iD + 0.3).toFixed(2));
+                const iQ1 = Math.floor(qmI * 4) / 4; const iQ2 = (iQ1 + 0.25).toFixed(2); // Quarter foot steps
+                sV('i-q1', iQ1); sV('i-q2', iQ2);
+                sV('i-disp1', (iQ1*900).toFixed(1)); sV('i-disp2', (iQ2*900+100).toFixed(1)); // Approx disp per ft
+                sV('i-lcf1', r(260,270)); sV('i-lcf2', r(260,270));
+                sV('i-tpc1', r(70,75)); sV('i-tpc2', r(70,75)); // TPI
+                sV('i-mtc2-1', r(1600,1700)); sV('i-mtc2-2', r(1600,1700)); // MTI
+                sV('i-mtc1-1', r(1600,1700)); sV('i-mtc1-2', r(1600,1700));
+
+                // Final Drafts (Feet)
+                const fD = parseFloat(r(29.5, 32.0));
+                sV('f-fp', (fD-0.6).toFixed(2)); sV('f-mp', fD.toFixed(2)); sV('f-ap', (fD+1.2).toFixed(2));
+                sV('f-fs', (fD-0.6).toFixed(2)); sV('f-ms', fD.toFixed(2)); sV('f-as', (fD+1.2).toFixed(2));
+                
+                // Hydro F
+                const qmF = parseFloat((fD + 0.3).toFixed(2));
+                const fQ1 = Math.floor(qmF * 4) / 4; const fQ2 = (fQ1 + 0.25).toFixed(2);
+                sV('f-q1', fQ1); sV('f-q2', fQ2);
+                sV('f-disp1', (fQ1*1200).toFixed(1)); sV('f-disp2', (fQ2*1200+100).toFixed(1));
+                sV('f-lcf1', r(240,250)); sV('f-lcf2', r(240,250));
+                sV('f-tpc1', r(95,105)); sV('f-tpc2', r(95,105)); // TPI
+                sV('f-mtc2-1', r(2400,2500)); sV('f-mtc2-2', r(2400,2500)); 
+                sV('f-mtc1-1', r(2400,2500)); sV('f-mtc1-2', r(2400,2500));
+
+            } else {
+                // Metric Generation (Default Data per User Request)
+                const lbp = 215.00; 
+                const ls = 9495.00; 
+                sV('ship-name', 'MV. SITUBAR DEFAULT');
+                
+                const dF = 1.00; 
+                const dM = 0.50; 
+                const dA = 7.50;
+
+                const surveys = isInitial ? ['i'] : ['i', 'f'];
+                surveys.forEach(p => {
+                    sV(p+'-lbp', lbp); sV(p+'-lightship', ls);
+                    sV(p+'-df', dF); sV(p+'-dm', dM); sV(p+'-da', dA);
+                    
+                    // Set Position Defaults (Standard)
+                    if(document.getElementById(p+'-df-pos')) document.getElementById(p+'-df-pos').value = 'behind';
+                    if(document.getElementById(p+'-plimsoll')) document.getElementById(p+'-plimsoll').value = 'behind';
+                    if(document.getElementById(p+'-da-pos')) document.getElementById(p+'-da-pos').value = 'ahead';
+                    
+                    if (p === 'i') {
+                        // Initial Deductibles (Specific)
+                        sV(p+'-fw', 185); 
+                        sV(p+'-bw', 320); 
+                        sV(p+'-fo', 575); 
+                        sV(p+'-do', 79); 
+                        sV(p+'-lo', 59); 
+                        sV(p+'-other', 0);
+                    } else {
+                         // Final Deductibles (Randomized for now as not specified)
+                        sV(p+'-fw', r(50,200)); sV(p+'-bw', r(100,500)); 
+                        sV(p+'-fo', r(300,600)); sV(p+'-do', r(40,100)); 
+                        sV(p+'-lo', r(10,50)); sV(p+'-other', r(0,10));
+                    }
+                });
+
+                // Initial Drafts (Specific)
+                sV('i-density', 1.020);
+                
+                // Port
+                sV('i-fp', 12.80); sV('i-mp', 12.92); sV('i-ap', 13.01);
+                // Starboard
+                sV('i-fs', 12.79); sV('i-ms', 12.95); sV('i-as', 13.00);
+                
+                // Hydro I (Specific Data from User)
+                const qmI = 12.92; // Approx
+                const iQ1 = 12.92; const iQ2 = 12.93;
+                sV('i-q1', iQ1); sV('i-q2', iQ2);
+                sV('i-disp1', 78135); sV('i-disp2', 78200); 
+                sV('i-lcf1', 0.80); sV('i-lcf2', 0.81);
+                sV('i-tpc1', 65.43); sV('i-tpc2', 65.44);
+                // Mapping: Top Row (MTC2 in HTML) -> 1009.55, Bottom Row (MTC1 in HTML) -> 1040.26
+                sV('i-mtc2-1', 1009.55); sV('i-mtc2-2', 1009.88); 
+                sV('i-mtc1-1', 1040.26); sV('i-mtc1-2', 1040.55);
+
+                if (!isInitial) {
+                    // Final Drafts (Random Example)
+                    sV('f-density', 1.025);
+                    const fD = parseFloat(r(6.0, 7.0));
+                    sV('f-fp', (fD-0.2).toFixed(2)); sV('f-mp', fD.toFixed(2)); sV('f-ap', (fD+0.4).toFixed(2));
+                    sV('f-fs', (fD-0.2).toFixed(2)); sV('f-ms', fD.toFixed(2)); sV('f-as', (fD+0.4).toFixed(2));
+                    
+                    // Hydro F
+                    const qmF = parseFloat((fD + 0.1).toFixed(2));
+                    const fQ1 = Math.floor(qmF * 20) / 20; const fQ2 = (fQ1 + 0.05).toFixed(2);
+                    sV('f-q1', fQ1); sV('f-q2', fQ2);
+                    sV('f-disp1', (fQ1*4000 + 20000).toFixed(1)); sV('f-disp2', (fQ2*4000+20050).toFixed(1));
+                    sV('f-lcf1', r(108,110)); sV('f-lcf2', r(108,110));
+                    sV('f-tpc1', r(50,55)); sV('f-tpc2', r(50,55));
+                    sV('f-mtc2-1', r(500,600)); sV('f-mtc2-2', r(500,600)); 
+                    sV('f-mtc1-1', r(500,600)); sV('f-mtc1-2', r(500,600));
+                }
+            }
+
+            setTimeout(() => { calc('initial'); if(!isInitial) setTimeout(()=>calc('final'), 100); }, 200);
+        }
+
+        function calc(type) {
+            const p = type==='initial'?'i':'f';
+            const res = compute(p);
+            
+            // UI Updates
+            sQM(p+'-qm-res', res.qm); 
+            sT(p+'-tot-ded', res.deduct);
+            sT('res-'+p+'-net', res.netDisp); 
+            sT('res-'+p+'-disp', res.dispTab);
+            sT('res-'+p+'-trim', res.trim1 + res.trim2);
+            sT('res-'+p+'-dens', res.densCorr);
+            
+            // Report Updates
+            sQM('rpt-'+p+'-qm', res.qm); 
+            sT('rpt-'+p+'-disp', res.dispTab);  
+            sT('rpt-'+p+'-trim1', res.trim1); 
+            sT('rpt-'+p+'-trim2', res.trim2); 
+            sT('rpt-'+p+'-dens', res.densCorr);
+            sT('rpt-'+p+'-net', res.netDisp); 
+            sT('rpt-'+p+'-ded', res.deduct);
+
+            // New Report Fields
+            sT('rpt-'+p+'-mf', res.mF);
+            sT('rpt-'+p+'-mm', res.mM);
+            sT('rpt-'+p+'-ma', res.mA);
+            sT('rpt-'+p+'-trim', res.appTrim);
+            sT('rpt-'+p+'-cf', res.cF);
+            sT('rpt-'+p+'-cm', res.cM);
+            sT('rpt-'+p+'-ca', res.cA);
+
+            // True Trim & Corrected Drafts
+            sT('rpt-'+p+'-truetrim', res.trueTrim);
+            sT('rpt-'+p+'-corr-f', res.fCorr);
+            sT('rpt-'+p+'-corr-m', res.mCorr);
+            sT('rpt-'+p+'-corr-a', res.aCorr);
+
+            // Step-by-Step QM
+            sQM('rpt-'+p+'-m1', res.meanFA);
+            sQM('rpt-'+p+'-m3', res.meanOfMean);
+            
+            // Calculate Constant & Cargo
+            // TRIGGER UPDATE FOR BOTH TABS WHEN INITIAL CHANGES
+            if(type === 'initial') {
+                const ls = gV('i-lightship');
+                CONSTANT = res.netDisp - (ls + res.deduct);
+                
+                sT('val-constant', CONSTANT);
+                sT('rpt-constant', CONSTANT);
+                sT('rpt-i-ls', ls);
+                
+                // Update Interpretation
+                if(document.getElementById('rpt-i-interpret')) {
+                    document.getElementById('rpt-i-interpret').innerText = generateInterpretation('initial', CONSTANT, ls);
+                }
+
+                // Force recalc final to update cargo based on new constant
+                requestAnimationFrame(() => calc('final'));
+
+            } else {
+                const ls = gV('f-lightship');
+                const cargo = res.netDisp - (ls + res.deduct + CONSTANT);
+                
+                const unit = isImperial ? " LT" : " MT";
+                sT('val-cargo', cargo + unit);
+                sT('rpt-net-cargo', cargo + unit); // Fixed ID
+                sT('rpt-f-ls', ls);
+                sT('rpt-f-const', CONSTANT);
+                
+                // Update Interpretation
+                if(document.getElementById('rpt-f-interpret')) {
+                    document.getElementById('rpt-f-interpret').innerText = generateInterpretation('final', cargo, ls);
+                }
+
+                document.getElementById('rpt-ship').innerText = document.getElementById('ship-name').value;
+                document.getElementById('rpt-date').innerText = new Date().toLocaleDateString();
+            }
+        }
+
+        function compute(p) {
+            const fp=gV(p+'-fp'), fs=gV(p+'-fs'), mp=gV(p+'-mp'), ms=gV(p+'-ms'), ap=gV(p+'-ap'), as=gV(p+'-as');
+            const lbp=gV(p+'-lbp'), dF=gV(p+'-df'), dM=gV(p+'-dm'), dA=gV(p+'-da'), dens=gV(p+'-density');
+            const mF=(fp+fs)/2, mM=(mp+ms)/2, mA=(ap+as)/2;
+            
+            const appTrim = mA - mF;
+            const trimSign = appTrim >= 0 ? 1 : -1; // Stern (+), Head (-)
+
+            // Get Position Signs: Behind (-1), Ahead (+1)
+            const getPosSign = (id, defaultVal) => {
+                const el = document.getElementById(id);
+                const val = el ? el.value : defaultVal;
+                // "behind" (Belakang) -> -1
+                // "ahead" (Depan) -> 1
+                return val === 'behind' ? -1 : 1;
+            };
+
+            // 1. Correct to Perpendiculars (LBM Calculation)
+            // Distance = LBP + (SignF * dF) - (SignA * dA)
+            // F: Behind(-1) -> Closer to mid -> LBM decreases (-dF)
+            // F: Ahead(+1) -> Further from mid -> LBM increases (+dF)
+            // A: Ahead(+1) -> Closer to mid -> LBM decreases (-dA)
+            // A: Behind(-1) -> Further from mid -> LBM increases (+dA)
+            const signF = getPosSign(p+'-df-pos', 'behind');
+            const signA = getPosSign(p+'-da-pos', 'ahead');
+            
+            let lbm = lbp + (signF * dF) - (signA * dA);
+            if(lbm <= 0) lbm = lbp;
+
+            /* 
+               STEM CORRECTION LOGIC (User Rules):
+               1. Trim Stern (+) & Mark Ahead (+) -> Plus (+)
+               2. Trim Head (-) & Mark Ahead (+) -> Minus (-)
+               3. If Mark Behind (-), inverse the above.
+               Formula: Correction Sign = TrimSign * PosSign
+            */
+            const sF = trimSign * signF;
+            const sM = trimSign * getPosSign(p+'-plimsoll', 'behind');
+            const sA = trimSign * signA; // Note: For correction sign, we use the position sign directly (Ahead/Behind)
+
+            // Calculate Absolute Corrections
+            const cF_abs = (dF * Math.abs(appTrim)) / lbm;
+            const cM_abs = (dM * Math.abs(appTrim)) / lbm;
+            const cA_abs = (dA * Math.abs(appTrim)) / lbm;
+
+            // 2. QM
+            const fCorr = Number((mF + (sF * cF_abs)).toFixed(3));
+            const mCorr = Number((mM + (sM * cM_abs)).toFixed(3));
+            const aCorr = Number((mA + (sA * cA_abs)).toFixed(3));
+            
+            // For Report: show the applied correction value (signed)
+            const cF = sF * cF_abs;
+            const cM = sM * cM_abs;
+            const cA = sA * cA_abs;
+
+            // QM (Quarter Mean) - Mean of Means
+            // Formula: (fCorr + 6*mCorr + aCorr) / 8
+            
+            // Step-by-step breakdown for validation
+            const meanFA = Number(((fCorr + aCorr) / 2).toFixed(6)); // Fore & after Mean (M1)
+            const meanOfMean = Number(((meanFA + mCorr) / 2).toFixed(6)); // Mean of Mean (M3)
+            const qm = Number(((meanOfMean + mCorr) / 2).toFixed(6)); // Quarter Mean (1/4 M)
+            
+            const trueTrim = aCorr - fCorr;
+
+            // 3. Interpolation
+            const q1=gV(p+'-q1'), q2=gV(p+'-q2');
+            const fac = (q2!==q1) ? (qm-q1)/(q2-q1) : 0;
+            const lerp = (a,b) => a + (b-a)*fac;
+            
+            // Round interpolated values to 3 decimals to match manual calculation precision
+            const dispTab = Number(lerp(gV(p+'-disp1'), gV(p+'-disp2')).toFixed(3));
+            const lcf = Number(lerp(gV(p+'-lcf1'), gV(p+'-lcf2')).toFixed(3));
+            const tpc = Number(lerp(gV(p+'-tpc1'), gV(p+'-tpc2')).toFixed(3));
+            const mtc1 = Number(lerp(gV(p+'-mtc1-1'), gV(p+'-mtc1-2')).toFixed(3)); 
+            const mtc2 = Number(lerp(gV(p+'-mtc2-1'), gV(p+'-mtc2-2')).toFixed(3));
+
+            // 4. Corrections
+            // Handle LBP zero safety
+            const safeLBP = lbp > 0 ? lbp : 1; 
+            let trim1, trim2;
+
+            if (isImperial) {
+                // Imperial Calculation
+                trim1 = (trueTrim * lcf * tpc * 12) / safeLBP; 
+                trim2 = (6 * Math.pow(trueTrim,2) * (mtc1 - mtc2))/safeLBP;
+            } else {
+                // Metric Calculation
+                // Trim1: (TrueTrim * LCF * TPC * 100) / LBP
+                // Rounding intermediate result to 3 decimals might be needed for exact match, but standard is float.
+                // We'll use standard float but the input LCF/TPC are now rounded.
+                trim1 = (trueTrim * lcf * tpc * 100)/safeLBP;
+                
+                // Trim2: (50 * TrueTrim^2 * dMTC) / LBP
+                trim2 = (50 * Math.pow(trueTrim,2) * (mtc1 - mtc2))/safeLBP;
+            }
+            
+            // Round Trim Corrections to 3 decimals for display consistency
+            trim1 = Number(trim1.toFixed(3));
+            trim2 = Number(trim2.toFixed(3));
+
+                        
+            const dispTrimmed = dispTab + trim1 + trim2;
+            const densCorr = dispTrimmed * (1.025 - dens)/1.025;
+            
+            const netDisp = dispTrimmed - densCorr;
+            const deduct = gV(p+'-fw')+gV(p+'-bw')+gV(p+'-fo')+gV(p+'-do')+gV(p+'-lo')+gV(p+'-other');
+            
+            return { qm, netDisp, deduct, trim1, trim2, densCorr, dispTab, mF, mM, mA, appTrim, cF, cM, cA, trueTrim, fCorr, mCorr, aCorr, meanFA, meanOfMean };
+        }
+        function generateInterpretation(type, val, lightship) {
+            let text = "";
+            const vStr = val.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+            
+            if (type === 'initial') {
+                // Constant Analysis
+                const pct = lightship > 0 ? (val / lightship) * 100 : 0;
+                
+                if (val > 0) {
+                    text = `Constant Positif (${vStr}). Menunjukkan adanya beban 'unknown' (Stores, Provision, Sisa Muatan, atau Lumpur) di atas kapal. Nilai ini sekitar ${pct.toFixed(2)}% dari Lightship. Jika > 2%, pastikan tidak ada muatan tertinggal.`;
+                } else if (val < 0) {
+                    text = `Constant Negatif (${vStr}). Menunjukkan Lightship aktual lebih berat dari dokumen, atau kesalahan pembacaan draft/tabel hydrostatic. Periksa kembali inputan Lightship dan Draft.`;
+                } else {
+                    text = "Constant Nol. Kondisi ideal (jarang terjadi). Pastikan data telah diinput dengan benar.";
+                }
+            } else {
+                // Net Cargo Analysis
+                if (val > 0) {
+                    text = `Total Muatan Bersih (Net Cargo) yang dimuat adalah ${vStr} ${isImperial?'LT':'MT'}. Angka ini didapat dari selisih Net Displacement Final dikurangi Lightship, Deductibles Final, dan Constant Initial.`;
+                } else {
+                    text = `Hasil Negatif atau Nol (${vStr}). Mohon periksa kembali draft Final atau Deductibles. Pastikan Draft Final lebih besar dari Initial jika memuat barang.`;
+                }
+            }
+            return text;
+        }
+
+        // --- LOGIN LOGIC ---
+        function doLogin() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const err = document.getElementById('login-error');
+            
+            // Credentials Check
+            if(u.toLowerCase() === 'beacukai' && p.toLowerCase() === 'banjarmasin') {
+                const overlay = document.getElementById('login-overlay');
+                overlay.style.transition = 'all 0.5s ease-out';
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'scale(0.95)';
+                
+                // Enable scrolling
+                document.body.classList.remove('overflow-hidden');
+                
+                setTimeout(() => {
+                    overlay.remove();
+                }, 500);
+            } else {
+                err.classList.remove('hidden');
+                // Shake animation on input fields
+                const userIn = document.getElementById('login-user');
+                const passIn = document.getElementById('login-pass');
+                
+                userIn.classList.add('ring-2', 'ring-red-500', 'bg-red-50');
+                passIn.classList.add('ring-2', 'ring-red-500', 'bg-red-50');
+                
+                setTimeout(() => {
+                    userIn.classList.remove('ring-2', 'ring-red-500', 'bg-red-50');
+                    passIn.classList.remove('ring-2', 'ring-red-500', 'bg-red-50');
+                }, 500);
+            }
+        }
+
+        // --- GEMINI AI CHATBOT LOGIC ---
+        const apiKey = "AIzaSyBFwxm5V-1b9G-8Y4oY1WLIQ7i0jVHr5OQ"; // Updated Gemini API Key
+
+        async function getAIResponse(input) {
+            // 1. Coba Panggil API Gemini (Jika Key Tersedia)
+            if (apiKey) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                    
+                    const systemInstruction = `
+                    Anda adalah asisten ahli untuk aplikasi 'Situbar' (Sistem Hitung Barang) yang digunakan oleh Surveyor dan Bea Cukai untuk Draught Survey kapal.
+                    
+                    Tugas Anda:
+                    1. Menjelaskan istilah teknis seperti Draft, Trim, Density, Constant, LCF, TPC, MTC, dll dengan bahasa Indonesia yang profesional namun mudah dimengerti.
+                    2. Menjelaskan rumus perhitungan muatan (Final Net Displacement - Lightship - Deductibles - Constant).
+                    3. Memberikan tips validasi data agar tidak terjadi kecurangan (misal manipulasi ballast).
+                    
+                    Jawablah dengan ringkas, padat, dan membantu.
+                    `;
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: input }] }],
+                            systemInstruction: { parts: [{ text: systemInstruction }] }
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('API Response not ok');
+
+                    const data = await response.json();
+                    if (data.candidates && data.candidates.length > 0) {
+                        // Merender markdown sederhana (bold/italic/lists) akan ditangani oleh CSS prose
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                } catch (e) {
+                    console.error("Gemini API Error, switching to fallback:", e);
+                }
+            }
+
+            // 2. Fallback Lokal (Jika Offline / Tanpa Key)
+            return getLocalResponse(input);
+        }
+
+        function getLocalResponse(input) {
+            const lower = input.toLowerCase();
+            if (lower.includes('draft') || lower.includes('ukur')) {
+                return "Draft Mark adalah angka kedalaman kapal. Diukur di 6 titik (Forward, Midle, After di sisi Kiri & Kanan). Jangan lupa koreksi jarak ke garis tegak (Perpendicular).";
+            }
+            if (lower.includes('constant') || lower.includes('konstan')) {
+                return "Constant adalah berat 'tak terdefinisi' di kapal (sisa lumpur, stok, cat, error table). Dihitung saat Initial Survey: Net Displacement - Lightship - Deductibles.";
+            }
+            if (lower.includes('density') || lower.includes('bj') || lower.includes('berat jenis')) {
+                return "Density standar air laut adalah 1.025. Jika Anda survey di sungai/air payau (misal 1.015), kapal akan tenggelam lebih dalam untuk berat yang sama. Aplikasi ini mengoreksi hal tersebut secara otomatis.";
+            }
+            if (lower.includes('muatan') || lower.includes('cargo') || lower.includes('hasil')) {
+                return "Berat Muatan (Net Cargo) dihitung saat Final Survey. Rumusnya: Net Displacement Final - Lightship - Deductibles Final - Constant Initial.";
+            }
+            if (lower.includes('situbar')) {
+                return "Situbar adalah Sistem Hitung Barang. Aplikasi ini membantu Surveyor atau petugas Bea Cukai menghitung draught survey dengan cepat dan akurat.";
+            }
+            if (lower.includes('trim')) {
+                return "Trim adalah selisih draft belakang dan depan. Koreksi Trim sangat penting agar pembacaan draft tengah akurat terhadap posisi Midship.";
+            }
+            
+            return "Mode Offline: Maaf, saya tidak mengerti pertanyaan spesifik itu. Coba tanya tentang 'Draft', 'Constant', atau 'Rumus Muatan'.";
+        }
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    chatWindow.classList.remove('opacity-0', 'scale-90');
+                    chatWindow.classList.add('opacity-100', 'scale-100');
+                });
+            } else {
+                chatWindow.classList.remove('opacity-100', 'scale-100');
+                chatWindow.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // User Message
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Typing Indicator
+            const chatBox = document.getElementById('chat-messages');
+            const typingId = 'typing-' + Date.now();
+            const typingHTML = `
+                <div id="${typingId}" class="flex justify-start animate-pulse">
+                    <div class="bg-gray-100 text-gray-500 p-3 rounded-lg rounded-tl-none text-xs">
+                        Sedang memproses...
+                    </div>
+                </div>`;
+            chatBox.insertAdjacentHTML('beforeend', typingHTML);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Get AI Response
+            const aiText = await getAIResponse(text);
+
+            // Remove typing & Add Response
+            const typingEl = document.getElementById(typingId);
+            if(typingEl) typingEl.remove();
+            
+            addMessage(aiText, 'ai');
+        }
+
+        function addMessage(text, sender) {
+            const chatBox = document.getElementById('chat-messages');
+            const isUser = sender === 'user';
+            
+            // Convert newlines to <br> for display
+            const formattedText = text.replace(/\n/g, '<br>');
+
+            const div = document.createElement('div');
+            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+            
+            div.innerHTML = `
+                <div class="${isUser ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none'} p-3 rounded-lg max-w-[85%] shadow-sm prose text-sm">
+                    ${formattedText}
+                </div>
+            `;
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // --- DISABLE INSPECT ELEMENT ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            // F12
+            if(e.keyCode == 123) {
+                return false;
+            }
+            // Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+J
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+U
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                return false;
+            }
+        }
+
+        let simPage = 1;
+        const totalSimPages = 19;
+
+        // DATABASE SOAL SIMULASI (19 HALAMAN)
+        // Note: Data ini diisi dengan default value (Page 1) karena ekstraksi gambar belum tersedia.
+        // User dapat mengisi data manual sesuai gambar.
+        
+        // Template Data Default (Page 1 - User Provided)
+        const defaultSimData = {
+            lbp: 215.00, lightship: 9495.00, df: 1.00, dm: 0.50, da: 7.50, 
+            df_pos: 'behind', plimsoll: 'behind', da_pos: 'ahead',
+            init: { 
+                fp:12.80, mp:12.92, ap:13.01, fs:12.79, ms:12.95, as:13.00, 
+                q1:12.92, q2:12.93,
+                disp1:78135.0, disp2:78200.0,
+                lcf1:0.80, lcf2:0.81,
+                tpc1:65.43, tpc2:65.44,
+                mtc1_1:1040.26, mtc1_2:1040.55,
+                mtc2_1:1009.55, mtc2_2:1009.88,
+                dens:1.020, 
+                fw:185, bw:320, fo:575, do:79, lo:59, other:0 
+            },
+            final: { 
+                fp:0, mp:0, ap:0, fs:0, ms:0, as:0, 
+                q1:0, q2:0, disp1:0, disp2:0, lcf1:0, lcf2:0, tpc1:0, tpc2:0, 
+                mtc1_1:0, mtc1_2:0, mtc2_1:0, mtc2_2:0,
+                dens:1.025, 
+                fw:0, bw:0, fo:0, do:0, lo:0, other:0 
+            }
+        };
+
+        const simData = Array.from({length: 19}, (_, i) => ({
+            id: i + 1,
+            ...JSON.parse(JSON.stringify(defaultSimData)) // Deep copy
+        }));
+
+        function changeSimPage(n) {
+            simPage += n;
+            if (simPage < 1) simPage = 1;
+            if (simPage > totalSimPages) simPage = totalSimPages;
+            
+            const numStr = simPage.toString().padStart(4, '0');
+            const imgPath = `images/DRAUGHT SURVEY - MANUAL CALCULATION_page-${numStr}.jpg`;
+            
+            document.getElementById('sim-image-viewer').src = imgPath;
+            document.getElementById('sim-page-indicator').innerText = `Halaman ${simPage} / ${totalSimPages}`;
+            
+            // Auto-load data for the page
+            loadSimData();
+        }
+
+        function loadSimData() {
+            const data = simData[simPage - 1];
+            if (!data) return;
+
+            // Ship Particulars
+            sV('sim-lbp', data.lbp);
+            sV('sim-lightship', data.lightship);
+            sV('sim-df', data.df);
+            sV('sim-dm', data.dm);
+            sV('sim-da', data.da);
+            
+            if(document.getElementById('sim-df-pos')) document.getElementById('sim-df-pos').value = data.df_pos || 'behind';
+            document.getElementById('sim-plimsoll').value = data.plimsoll || 'behind';
+            if(document.getElementById('sim-da-pos')) document.getElementById('sim-da-pos').value = data.da_pos || 'ahead';
+
+            // Initial Survey
+            sV('sim-i-fp', data.init.fp); sV('sim-i-mp', data.init.mp); sV('sim-i-ap', data.init.ap);
+            sV('sim-i-fs', data.init.fs); sV('sim-i-ms', data.init.ms); sV('sim-i-as', data.init.as);
+            
+            sV('sim-i-q1', data.init.q1); sV('sim-i-q2', data.init.q2);
+            sV('sim-i-disp1', data.init.disp1); sV('sim-i-disp2', data.init.disp2);
+            sV('sim-i-lcf1', data.init.lcf1); sV('sim-i-lcf2', data.init.lcf2);
+            sV('sim-i-tpc1', data.init.tpc1); sV('sim-i-tpc2', data.init.tpc2);
+            sV('sim-i-mtc1-1', data.init.mtc1_1); sV('sim-i-mtc1-2', data.init.mtc1_2);
+            sV('sim-i-mtc2-1', data.init.mtc2_1); sV('sim-i-mtc2-2', data.init.mtc2_2);
+            
+            sV('sim-i-dens', data.init.dens);
+            sV('sim-i-fw', data.init.fw); sV('sim-i-bw', data.init.bw); sV('sim-i-fo', data.init.fo);
+            sV('sim-i-do', data.init.do); sV('sim-i-lo', data.init.lo); sV('sim-i-other', data.init.other);
+
+            // Final Survey
+            sV('sim-f-fp', data.final.fp); sV('sim-f-mp', data.final.mp); sV('sim-f-ap', data.final.ap);
+            sV('sim-f-fs', data.final.fs); sV('sim-f-ms', data.final.ms); sV('sim-f-as', data.final.as);
+            
+            sV('sim-f-q1', data.final.q1); sV('sim-f-q2', data.final.q2);
+            sV('sim-f-disp1', data.final.disp1); sV('sim-f-disp2', data.final.disp2);
+            sV('sim-f-lcf1', data.final.lcf1); sV('sim-f-lcf2', data.final.lcf2);
+            sV('sim-f-tpc1', data.final.tpc1); sV('sim-f-tpc2', data.final.tpc2);
+            sV('sim-f-mtc1-1', data.final.mtc1_1); sV('sim-f-mtc1-2', data.final.mtc1_2);
+            sV('sim-f-mtc2-1', data.final.mtc2_1); sV('sim-f-mtc2-2', data.final.mtc2_2);
+
+            sV('sim-f-dens', data.final.dens);
+            sV('sim-f-fw', data.final.fw); sV('sim-f-bw', data.final.bw); sV('sim-f-fo', data.final.fo);
+            sV('sim-f-do', data.final.do); sV('sim-f-lo', data.final.lo); sV('sim-f-other', data.final.other);
+
+            setTimeout(calcSim, 100);
+        }
+
+        function calcSim() {
+            // Use compute function for robust calculation
+            // Initial
+            const resI = compute('sim-i');
+            // Update Initial UI
+            document.getElementById('sim-i-mean-res').innerText = resI.qm.toFixed(6);
+            document.getElementById('sim-i-trim1').innerText = resI.trim1.toFixed(3);
+            document.getElementById('sim-i-trim2').innerText = resI.trim2.toFixed(3);
+            document.getElementById('sim-i-trim-tot').innerText = (resI.trim1 + resI.trim2).toFixed(3);
+            document.getElementById('sim-i-dens-corr').innerText = resI.densCorr.toFixed(3);
+            document.getElementById('sim-i-ded-total').innerText = resI.deduct.toFixed(3);
+            
+            const ls = parseFloat(document.getElementById('sim-lightship').value) || 0;
+            const constant = resI.netDisp - (ls + resI.deduct);
+            document.getElementById('sim-i-const-final').innerText = constant.toFixed(3);
+
+            // Final
+            const resF = compute('sim-f');
+            // Update Final UI
+            document.getElementById('sim-f-mean-res').innerText = resF.qm.toFixed(6);
+            document.getElementById('sim-f-trim1').innerText = resF.trim1.toFixed(3);
+            document.getElementById('sim-f-trim2').innerText = resF.trim2.toFixed(3);
+            document.getElementById('sim-f-trim-tot').innerText = (resF.trim1 + resF.trim2).toFixed(3);
+            document.getElementById('sim-f-dens-corr').innerText = resF.densCorr.toFixed(3);
+            document.getElementById('sim-f-ded-total').innerText = resF.deduct.toFixed(3);
+            
+            // Cargo Calculation
+            // Net Disp Final - Lightship - Deduct Final - Constant
+            const cargo = resF.netDisp - (ls + resF.deduct + constant);
+            document.getElementById('sim-f-cargo-final').innerText = cargo.toFixed(3) + " MT";
+        }
+
+        window.onload = () => generateAllData(true);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
