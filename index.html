@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aplikasi Situbar - Draught Survey (Offline)</title>
+    <title>WAVE (Weight Assessment on Vessel Entry)</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <script src="assets/js/tailwindcss.js"></script>
@@ -64,8 +64,9 @@
             </div>
 
 
-            <h2 class="text-2xl font-bold text-slate-800 mb-1">Simulasi Situbar</h2>
-            <p class="text-sm text-slate-500 mb-6">Silahkan login untuk melanjutkan</p>
+            <h2 class="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">WAVE</h2>
+            <p class="text-sm font-medium text-slate-500 mb-2">Weight Assessment on Vessel Entry</p>
+            <p class="text-xs font-bold text-blue-600 tracking-wider mb-8 uppercase">BEACUKAI BANJARMASIN</p>
             
             <div class="space-y-4 text-left">
                 <div>
@@ -101,7 +102,7 @@
             <div class="flex items-center gap-3">
                 <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg"><i class="fas fa-ship text-lg"></i></div>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-800 leading-tight">Simulasi Penggunaan Aplikasi Situbar Curah Padat</h1>
+                    <h1 class="text-lg font-bold text-slate-800 leading-tight">WAVE (Weight Assessment on Vessel Entry)</h1>
                     <p class="text-xs text-slate-500 font-medium">Draught Survey Calculator</p>
                 </div>
             </div>
@@ -136,7 +137,7 @@
             <div class="glass-card">
                 <div class="p-4 grid md:grid-cols-2 gap-4 items-center">
                    <div class="w-full flex gap-2">
-                       <input type="text" id="ship-name" class="input-dummy text-left px-3 font-bold text-blue-800" value="MV. SITUBAR TEST" placeholder="NAMA KAPAL">
+                       <input type="text" id="ship-name" class="input-dummy text-left px-3 font-bold text-blue-800" value="MV. WAVE TEST" placeholder="NAMA KAPAL">
                         <button onclick="toggleUnit()" id="btn-unit" class="bg-teal-100 text-teal-800 border border-teal-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-teal-200 transition flex items-center gap-2 shadow-sm">
                             <i class="fas fa-balance-scale"></i> METRIC SYSTEM
                         </button>
@@ -412,7 +413,7 @@
                 <div class="flex justify-between items-end border-b-2 border-slate-800 pb-4 mb-6">
                     <div>
                         <h2 class="text-3xl font-bold font-serif text-slate-900 tracking-tight">LAPORAN SURVEY</h2>
-                        <p class="text-sm text-slate-500 uppercase tracking-widest mt-1">Situbar Official Report</p>
+                        <p class="text-sm text-slate-500 uppercase tracking-widest mt-1">WAVE Official Report</p>
                     </div>
                     <div class="text-right text-sm font-mono text-slate-600">
                         <p id="rpt-date">Date: -</p>
@@ -515,7 +516,34 @@
         <!-- TAB 4: PANDUAN (FULL LENGKAP) -->
         <div id="guide" class="tab-content">
             <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold text-slate-800 mb-4">Panduan Lengkap Situbar</h2>
+                <h2 class="text-xl font-bold text-slate-800 mb-4">Panduan Lengkap WAVE</h2>
+
+                <!-- OFFLINE GUIDE -->
+                <div class="mb-6 bg-blue-50 p-4 rounded border-l-4 border-blue-600 text-sm text-slate-700">
+                    <h4 class="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                        <i class="fas fa-wifi text-red-500"></i> MODE OFFLINE & INSTALASI
+                    </h4>
+                    <p class="mb-3 font-semibold">Aplikasi ini dapat digunakan TANPA INTERNET (Offline) sepenuhnya.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded border border-blue-100">
+                            <span class="font-bold text-blue-600 block mb-1"><i class="fab fa-android"></i> ANDROID (Chrome)</span>
+                            <ol class="list-decimal pl-4 text-xs space-y-1">
+                                <li>Buka Menu (Titik Tiga) di pojok kanan atas.</li>
+                                <li>Pilih <strong>"Install App"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.</li>
+                                <li>Aplikasi akan terinstall dan bisa dibuka offline.</li>
+                            </ol>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-blue-100">
+                            <span class="font-bold text-blue-600 block mb-1"><i class="fab fa-apple"></i> IOS / IPHONE (Safari)</span>
+                            <ol class="list-decimal pl-4 text-xs space-y-1">
+                                <li>Tekan tombol <strong>Share</strong> (Kotak panah atas).</li>
+                                <li>Pilih menu <strong>"Tambah ke Layar Utama"</strong> (Add to Home Screen).</li>
+                                <li>Aplikasi siap digunakan offline.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="mb-6 bg-green-50 p-4 rounded border-l-4 border-green-500 text-sm text-slate-700">
                     <h4 class="font-bold text-green-700 mb-2">Tahapan Pelaksanaan Draught Survey</h4>
@@ -611,7 +639,7 @@
                 </div>
 
                 <div class="bg-blue-50 p-4 rounded border-l-4 border-blue-500 mb-6 text-sm text-slate-700">
-                    <h4 class="font-bold text-blue-700 mb-2">Metode Perhitungan Situbar</h4>
+                    <h4 class="font-bold text-blue-700 mb-2">Metode Perhitungan WAVE</h4>
                     <ul class="list-disc pl-4 space-y-1">
                         <li><strong>LBM:</strong> LBP - dF - dA</li>
                         <li><strong>True Trim:</strong> Apparent Trim × (LBP / LBM)</li>
@@ -1044,7 +1072,7 @@
         <div class="bg-blue-600 text-white p-3 md:p-4 rounded-t-xl flex justify-between items-center shadow-md">
             <div class="flex items-center gap-2">
                 <i class="fas fa-robot"></i>
-                <span class="font-bold text-sm md:text-base">Asisten Simulasi Situbar BC Banjarmasin</span>
+                <span class="font-bold text-sm md:text-base">Asisten Simulasi WAVE BC Banjarmasin</span>
             </div>
             <button onclick="toggleChat()" class="hover:text-gray-200 transition-colors"><i class="fas fa-times"></i></button>
         </div>
@@ -1054,7 +1082,7 @@
             <!-- Welcome Message -->
             <div class="flex justify-start">
                 <div class="bg-white border border-slate-200 text-slate-700 p-3 rounded-lg rounded-tl-none max-w-[85%] shadow-sm prose">
-                    Halo! Saya Asisten AI Simulasi Situbar BC Banjarmasin. 🤖
+                    Halo! Saya Asisten AI Simulasi WAVE BC Banjarmasin. 🤖
                     <br><br>
                     Tanyakan apa saja tentang Draught Survey, istilah teknis, atau cara perhitungan!
                 </div>
@@ -1250,10 +1278,93 @@
         function sV(id,v) { const el=document.getElementById(id); if(el) { el.value=v; el.classList.add('updated'); setTimeout(()=>el.classList.remove('updated'),500); } }
         function r(min,max,dec=2) { return (Math.random()*(max-min)+min).toFixed(dec); }
 
+        // --- PERSISTENCE (AUTO-SAVE) ---
+        const STORAGE_KEY = 'WAVE_APP_DATA_V1';
+
+        function saveToStorage() {
+            const data = {
+                inputs: {},
+                isImperial: isImperial,
+                currentConstant: currentConstant
+            };
+            
+            document.querySelectorAll('input, select').forEach(el => {
+                if (el.id && !el.id.startsWith('chat-')) { // Exclude chat inputs
+                    data.inputs[el.id] = el.value;
+                }
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromStorage() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+
+            try {
+                const data = JSON.parse(raw);
+                
+                // Restore Imperial State
+                if (typeof data.isImperial !== 'undefined') {
+                     isImperial = data.isImperial;
+                     const btn = document.getElementById('btn-unit');
+                     if(isImperial) {
+                        btn.innerHTML = '<i class="fas fa-ruler-combined"></i> IMPERIAL SYSTEM';
+                        btn.className = "bg-rose-100 text-rose-800 border border-rose-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-rose-200 transition flex items-center gap-2 shadow-sm";
+                     } else {
+                        btn.innerHTML = '<i class="fas fa-balance-scale"></i> METRIC SYSTEM';
+                        btn.className = "bg-teal-100 text-teal-800 border border-teal-300 px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap hover:bg-teal-200 transition flex items-center gap-2 shadow-sm";
+                     }
+                     updateLabels();
+                }
+
+                // Restore Constant
+                if (typeof data.currentConstant !== 'undefined') {
+                    currentConstant = data.currentConstant;
+                }
+
+                // Restore Inputs
+                if (data.inputs) {
+                    Object.keys(data.inputs).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = data.inputs[id];
+                    });
+                }
+
+                // Re-calculate to show results
+                // We wrap in try-catch in case calc isn't ready or data causes issues
+                try {
+                    if (typeof calc === 'function') {
+                        calc('initial');
+                        calc('final');
+                    }
+                    if (typeof calcSim === 'function') {
+                        // Optional: calcSim(); 
+                    }
+                } catch(err) {
+                    console.warn("Auto-calc after load failed:", err);
+                }
+
+            } catch (e) {
+                console.error("Failed to load data", e);
+            }
+        }
+
+        // Auto-save listener
+        document.addEventListener('input', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                saveToStorage();
+            }
+        });
+        
+        // Load on startup
+        window.addEventListener('DOMContentLoaded', loadFromStorage);
+
         function resetAllData() {
             document.querySelectorAll('input').forEach(i => i.value = '');
             document.querySelectorAll('[id^="res-"], [id^="rpt-"], [id^="val-"], [id$="-res"], [id$="-ded"]').forEach(s => s.innerText = '0.000');
-            CONSTANT = 0;
+            currentConstant = 0;
+            localStorage.removeItem(STORAGE_KEY);
             alert("Data berhasil dikosongkan!");
         }
 
@@ -1648,7 +1759,7 @@
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
                     
                     const systemInstruction = `
-                    Anda adalah asisten ahli untuk aplikasi 'Situbar' (Sistem Hitung Barang) yang digunakan oleh Surveyor dan Bea Cukai untuk Draught Survey kapal.
+                    Anda adalah asisten ahli untuk aplikasi 'WAVE' (Weight Assessment on Vessel Entry) yang digunakan oleh Surveyor dan Bea Cukai untuk Draught Survey kapal.
                     
                     Tugas Anda:
                     1. Menjelaskan istilah teknis seperti Draft, Trim, Density, Constant, LCF, TPC, MTC, dll dengan bahasa Indonesia yang profesional namun mudah dimengerti.
@@ -1697,8 +1808,8 @@
             if (lower.includes('muatan') || lower.includes('cargo') || lower.includes('hasil')) {
                 return "Berat Muatan (Net Cargo) dihitung saat Final Survey. Rumusnya: Net Displacement Final - Lightship - Deductibles Final - Constant Initial.";
             }
-            if (lower.includes('situbar')) {
-                return "Situbar adalah Sistem Hitung Barang. Aplikasi ini membantu Surveyor atau petugas Bea Cukai menghitung draught survey dengan cepat dan akurat.";
+            if (lower.includes('situbar') || lower.includes('wave')) {
+                return "WAVE (Weight Assessment on Vessel Entry) adalah nama baru dari Situbar. Aplikasi ini membantu Surveyor atau petugas Bea Cukai menghitung draught survey dengan cepat dan akurat.";
             }
             if (lower.includes('trim')) {
                 return "Trim adalah selisih draft belakang dan depan. Koreksi Trim sangat penting agar pembacaan draft tengah akurat terhadap posisi Midship.";
