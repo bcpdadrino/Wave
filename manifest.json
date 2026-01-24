@@ -1,11 +1,11 @@
 {
-  "name": "Simulasi Situbar",
-  "short_name": "Situbar",
+  "name": "WAVE (Weight Assessment on Vessel Entry)",
+  "short_name": "WAVE",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f1f5f9",
   "theme_color": "#2563eb",
-  "description": "Aplikasi Simulasi Draught Survey Situbar",
+  "description": "Aplikasi Simulasi Draught Survey WAVE",
   "icons": [
     {
       "src": "icons/icon-192.png",
