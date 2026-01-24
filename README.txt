@@ -4,13 +4,13 @@ Aplikasi ini sudah di-hosting dan siap digunakan sebagai PWA (Progressive Web Ap
 Anda dapat menginstalnya ke HP (Android/iOS) agar bisa digunakan secara OFFLINE (tanpa internet).
 
 ALAMAT WEB:
-https://rinomanalu.github.io/situbarbjmoffline/
+https://rinomanalu.github.io/Wave/
 
 PANDUAN INSTALASI (PILIH SESUAI PERANGKAT):
 
 A. PENGGUNA ANDROID (Google Chrome)
 1. Buka Chrome di HP Anda.
-2. Kunjungi alamat: https://rinomanalu.github.io/situbarbjmoffline/
+2. Kunjungi alamat: https://rinomanalu.github.io/Wave/
 3. Tunggu sebentar hingga halaman selesai dimuat.
 4. Ketuk ikon titik tiga (Menu) di pojok kanan atas browser.
 5. Pilih menu "Install App" atau "Tambahkan ke Layar Utama" (Add to Home Screen).

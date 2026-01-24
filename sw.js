@@ -1,4 +1,4 @@
-const CACHE_NAME = 'situbar-v1';
+const CACHE_NAME = 'wave-v1';
 const ASSETS = [
   './',
   './index.html',
