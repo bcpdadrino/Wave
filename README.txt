@@ -17,7 +17,7 @@ A. PENGGUNA ANDROID (Google Chrome)
 6. Ketuk "Install" atau "Tambahkan" pada konfirmasi yang muncul.
 7. Aplikasi WAVE akan muncul di daftar aplikasi HP Anda dan bisa dibuka tanpa internet.
 
-B. PENGGUNA IOS / IPHONE (Safari)
+B. PENGGUNA IOS / IPHONE (Wajib menggunakan Safari)
 1. Buka Safari di iPhone/iPad Anda.
 2. Kunjungi alamat: https://rinomanalu.github.io/Wave/
 3. Ketuk ikon "Share" (kotak dengan panah ke atas) di bagian bawah layar.

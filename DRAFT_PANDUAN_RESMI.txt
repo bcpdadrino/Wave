@@ -1,0 +1,64 @@
+LAMPIRAN: PANDUAN PENGGUNAAN APLIKASI WAVE (WEIGHT ASSESSMENT ON VESSEL ENTRY)
+
+I. PENDAHULUAN
+WAVE (Weight Assessment on Vessel Entry) adalah aplikasi berbasis web (Progressive Web App) yang dirancang untuk mempermudah dan mempercepat pelaksanaan Draught Survey dalam rangka penetapan berat muatan curah (bulk cargo) di atas kapal. Aplikasi ini dirancang agar dapat bekerja secara mandiri (offline) setelah diinstal pada perangkat pengguna, sehingga sangat andal digunakan di area perairan yang minim sinyal.
+
+II. AKSES DAN INSTALASI
+1.  Alamat Akses:
+    Buka peramban (browser) Google Chrome (Android) atau Safari (iOS) dan kunjungi alamat:
+    https://rinomanalu.github.io/Wave/
+
+2.  Instalasi ke Perangkat (Wajib agar dapat digunakan Offline):
+    a. Pengguna Android (Google Chrome):
+       - Buka alamat web di atas.
+       - Tekan ikon menu (titik tiga) di pojok kanan atas layar.
+       - Pilih opsi "Install App" atau "Tambahkan ke Layar Utama" (Add to Home Screen).
+       - Konfirmasi dengan menekan "Install".
+    
+    b. Pengguna iOS / iPhone (Wajib menggunakan Safari):
+       - Buka alamat web di atas menggunakan Safari.
+       - Tekan tombol "Share" (ikon kotak dengan panah ke atas) di bagian bawah layar.
+       - Gulir ke bawah dan pilih menu "Tambah ke Layar Utama" (Add to Home Screen).
+       - Tekan "Tambah" (Add) di pojok kanan atas.
+
+III. PETUNJUK PENGGUNAAN
+
+A. Halaman Login
+   - Saat pertama kali dibuka, pengguna akan diminta memasukkan kredensial.
+   - Username: Masukkan nama Instansi.
+   - Password: Masukkan Kota Penempatan.
+   - Tekan tombol "MASUK APLIKASI" untuk memulai.
+
+B. Tahapan Pelaksanaan Survey
+   Aplikasi terdiri dari beberapa menu (tab) yang mencerminkan alur kerja Draught Survey:
+
+   1. Tab 1: Initial Survey (Survey Awal)
+      Digunakan untuk perhitungan kondisi kapal sebelum muat (Initial Draft Survey).
+      - Data Ukur Draft: Masukkan angka pembacaan draft Depan (Fwd), Tengah (Mid), dan Belakang (Aft) untuk sisi Kiri (Port) dan Kanan (Starboard).
+      - Data Kapal: Masukkan data Lightship, LBP (Length Between Perpendiculars), dan Density air perairan saat pengukuran (diukur menggunakan Hydrometer).
+      - Koreksi Marka: Masukkan jarak koreksi jika draft mark tidak tepat berada di garis tegak (Perpendiculars).
+      - Deductibles: Masukkan jumlah cairan di atas kapal (Fresh Water, Ballast, Fuel Oil, Diesel Oil, Lube Oil) sesuai hasil sounding.
+      - Hydrostatic Data: Masukkan nilai TPC, LCF, MTC, dan Displacement dari tabel hidrostatik kapal sesuai dengan Quarter Mean (QM) draft yang dihitung otomatis oleh aplikasi.
+      - Hasil: Aplikasi akan secara otomatis menghitung Net Displacement Initial dan Constant kapal.
+
+   2. Tab 2: Final Survey (Survey Akhir)
+      Digunakan untuk perhitungan kondisi kapal setelah selesai muat (Final Draft Survey).
+      - Lakukan penginputan data draft, density, dan deductibles (cairan) terkini sama seperti langkah pada Initial Survey.
+      - Pastikan nilai Constant yang digunakan konsisten dengan hasil Initial Survey.
+
+   3. Tab 3: Laporan Hasil (Result)
+      Halaman ini menyajikan rekapitulasi perhitungan muatan.
+      - Net Displacement: Menampilkan berat benaman bersih kapal pada kondisi Initial dan Final.
+      - Cargo Loaded: Menampilkan total berat muatan yang dimuat (Selisih antara Net Displacement Final dan Initial).
+      - Detail Perhitungan: Pengguna dapat melihat rincian koreksi (Draft Corrections, Trim Corrections, Density Correction) untuk verifikasi manual jika diperlukan.
+
+IV. FITUR KHUSUS
+1.  Mode Offline (Tanpa Internet)
+    Seluruh fitur perhitungan (Tab Initial, Final, dan Result) berjalan 100% di sisi klien (perangkat pengguna). Artinya, petugas dapat melakukan perhitungan di tengah laut tanpa memerlukan koneksi internet sedikitpun, asalkan aplikasi sudah terinstal sebelumnya. Data input akan tersimpan otomatis di memori peramban.
+
+2.  Asisten AI (Kecerdasan Buatan)
+    Terdapat fitur "Asisten AI" untuk menjawab pertanyaan teknis seputar regulasi atau teori Draught Survey.
+    *Catatan: Khusus fitur tanya-jawab AI ini, koneksi internet tetap diperlukan.*
+
+V. PENUTUP
+Pastikan seluruh data yang dimasukkan ke dalam aplikasi bersumber dari pembacaan aktual di lapangan dan referensi dokumen kapal yang valid (Ship's Stability Booklet / Hydrostatic Table) untuk menjamin keakuratan hasil perhitungan muatan.

@@ -22,7 +22,7 @@
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         input.input-dummy:focus, select.input-dummy:focus { 
-            border-color: #3b82f6; outline: none; ring: 2px solid rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
         input.input-dummy.updated { background-color: #dbeafe; border-color: #2563eb; transition: background-color 0.4s; }
         
@@ -52,47 +52,112 @@
         
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        @media print {
+            @page { size: A4; margin: 15mm; }
+            body { background-color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family: 'Times New Roman', Times, serif; font-size: 12pt; }
+            header, .no-print, #login-overlay, .tab-buttons-container { display: none !important; }
+            .tab-content { display: none !important; }
+            #report { display: block !important; }
+            .paper-report { box-shadow: none !important; border: 2px solid #000 !important; padding: 20px !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+            .paper-report::before { display: none; } /* Remove the colored top border */
+            
+            /* Report Header */
+            .paper-report h2 { font-size: 24pt !important; text-align: center; margin-bottom: 5px; color: #000 !important; }
+            .paper-report p.tracking-widest { text-align: center; color: #000 !important; font-size: 10pt; border-bottom: 1px solid #000; padding-bottom: 1rem; margin-bottom: 20px; }
+            
+            /* Force Grid to 2 Columns */
+            #report .grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+            
+            /* Sub-headers */
+            .report-header-sub { background-color: #eee !important; color: #000 !important; font-weight: bold; border: 1px solid #000; border-bottom: none; }
+            
+            /* Rows */
+            .report-row { border-bottom: 1px solid #ccc; page-break-inside: avoid; }
+            .report-label { color: #000 !important; }
+            .report-value { color: #000 !important; font-weight: bold; }
+            
+            /* Colors override for black/white printers */
+            .text-blue-600, .text-red-600, .text-green-900, .text-yellow-900 { color: #000 !important; }
+            .bg-blue-50, .bg-slate-50, .bg-green-50, .bg-yellow-50, .bg-slate-100 { background-color: transparent !important; }
+            
+            /* Ensure Net Cargo stands out */
+            #rpt-net-cargo { font-size: 18pt !important; border: 2px solid #000; padding: 10px; display: block; margin-top: 10px; }
+        }
     </style>
 </head>
 <body class="pb-24 overflow-hidden">
 
     <!-- Login Overlay -->
-    <div id="login-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center border-4 border-blue-500/20">
-            <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
-                <i class="fas fa-ship text-3xl text-white"></i>
-            </div>
-
-
-            <h2 class="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">WAVE</h2>
-            <p class="text-sm font-medium text-slate-500 mb-2">Weight Assessment on Vessel Entry</p>
-            <p class="text-xs font-bold text-blue-600 tracking-wider mb-8 uppercase">BEACUKAI BANJARMASIN</p>
+    <div id="login-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 text-center border-4 border-blue-500/20 flex flex-col md:flex-row gap-8 items-center md:items-start">
             
-            <div class="space-y-4 text-left">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Username</label>
-                    <div class="tooltip-wrap">
-                        <span class="tooltip-content">isikan nama instansi kita</span>
-                        <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan username">
+            <!-- Left: Login Form -->
+            <div class="w-full md:w-1/2">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-ship text-3xl text-white"></i>
+                </div>
+
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-1 tracking-tight">WAVE</h2>
+                <p class="text-sm font-medium text-slate-500 mb-2">Weight Assessment on Vessel Entry</p>
+                <p class="text-xs font-bold text-blue-600 tracking-wider mb-8 uppercase">BEACUKAI BANJARMASIN</p>
+                
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Username</label>
+                        <div class="tooltip-wrap">
+                            <span class="tooltip-content">isikan nama instansi kita</span>
+                            <input type="text" id="login-user" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan username">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Password</label>
+                        <div class="tooltip-wrap">
+                            <span class="tooltip-content">isikan kota penempatan kita</span>
+                            <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') doLogin()">
+                        </div>
+                    </div>
+                    <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs font-bold p-3 rounded-lg flex items-center gap-2 border border-red-100 animate-pulse">
+                        <i class="fas fa-exclamation-circle"></i> Username atau Password salah!
+                    </div>
+                    <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-[0.98]">
+                        MASUK APLIKASI
+                    </button>
+                </div>
+                <div class="mt-6 text-xs text-slate-400 font-medium">
+                    &copy; 2026 Epiphania Rino,PDAD Beacukai Banjarmasin
+                </div>
+            </div>
+
+            <!-- Right: Offline Guide -->
+            <div class="w-full md:w-1/2 text-left">
+                <div class="bg-blue-50 p-5 rounded-xl border-l-4 border-blue-600 text-sm text-slate-700 h-full">
+                    <h4 class="font-bold text-blue-800 mb-4 flex items-center gap-2 text-lg">
+                        <i class="fas fa-wifi text-red-500"></i> MODE OFFLINE & INSTALASI
+                    </h4>
+                    <p class="mb-4 font-semibold">Aplikasi ini dapat digunakan TANPA INTERNET (Offline) sepenuhnya.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border border-blue-100 shadow-sm">
+                            <span class="font-bold text-blue-600 block mb-2"><i class="fab fa-android"></i> ANDROID (Chrome)</span>
+                            <ol class="list-decimal pl-4 text-xs space-y-2 text-slate-600">
+                                <li>Buka Menu (Titik Tiga) di pojok kanan atas.</li>
+                                <li>Pilih <strong>"Install App"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.</li>
+                                <li>Aplikasi akan terinstall dan bisa dibuka offline.</li>
+                            </ol>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-blue-100 shadow-sm">
+                            <span class="font-bold text-blue-600 block mb-2"><i class="fab fa-apple"></i> IOS / IPHONE (Wajib Menggunakan Safari)</span>
+                            <ol class="list-decimal pl-4 text-xs space-y-2 text-slate-600">
+                                <li>Tekan tombol <strong>Share</strong> (Kotak panah atas).</li>
+                                <li>Pilih menu <strong>"Tambah ke Layar Utama"</strong> (Add to Home Screen).</li>
+                                <li>Aplikasi siap digunakan offline.</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Password</label>
-                    <div class="tooltip-wrap">
-                        <span class="tooltip-content">isikan kota penempatan kita</span>
-                        <input type="password" id="login-pass" class="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-slate-50" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') doLogin()">
-                    </div>
-                </div>
-                <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs font-bold p-3 rounded-lg flex items-center gap-2 border border-red-100 animate-pulse">
-                    <i class="fas fa-exclamation-circle"></i> Username atau Password salah!
-                </div>
-                <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-[0.98]">
-                    MASUK APLIKASI
-                </button>
             </div>
-            <div class="mt-6 text-xs text-slate-400 font-medium">
-                &copy; 2026 Epiphania Rino,PDAD Beacukai Banjarmasin
-            </div>
+
         </div>
     </div>
 
@@ -410,14 +475,19 @@
         <!-- TAB 3: REPORT -->
         <div id="report" class="tab-content">
             <div class="max-w-4xl mx-auto paper-report p-8 rounded-lg mb-8">
-                <div class="flex justify-between items-end border-b-2 border-slate-800 pb-4 mb-6">
+                <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
                     <div>
                         <h2 class="text-3xl font-bold font-serif text-slate-900 tracking-tight">LAPORAN SURVEY</h2>
                         <p class="text-sm text-slate-500 uppercase tracking-widest mt-1">WAVE Official Report</p>
                     </div>
-                    <div class="text-right text-sm font-mono text-slate-600">
-                        <p id="rpt-date">Date: -</p>
-                        <p id="rpt-ship">Vessel: -</p>
+                    <div class="flex flex-col items-end gap-2">
+                         <div class="text-right text-sm font-mono text-slate-600">
+                            <p id="rpt-date">Date: -</p>
+                            <p id="rpt-ship">Vessel: -</p>
+                        </div>
+                        <button onclick="window.print()" class="no-print bg-slate-800 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-slate-900 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-file-pdf"></i> SIMPAN PDF
+                        </button>
                     </div>
                 </div>
 
@@ -535,7 +605,7 @@
                             </ol>
                         </div>
                         <div class="bg-white p-3 rounded border border-blue-100">
-                            <span class="font-bold text-blue-600 block mb-1"><i class="fab fa-apple"></i> IOS / IPHONE (Safari)</span>
+                            <span class="font-bold text-blue-600 block mb-1"><i class="fab fa-apple"></i> IOS / IPHONE (Wajib menggunakan Safari)</span>
                             <ol class="list-decimal pl-4 text-xs space-y-1">
                                 <li>Tekan tombol <strong>Share</strong> (Kotak panah atas).</li>
                                 <li>Pilih menu <strong>"Tambah ke Layar Utama"</strong> (Add to Home Screen).</li>
