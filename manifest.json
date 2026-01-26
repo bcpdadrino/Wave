@@ -8,12 +8,12 @@
   "description": "Aplikasi Simulasi Draught Survey WAVE",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "assets/img/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "assets/img/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
