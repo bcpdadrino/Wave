@@ -1,0 +1,148 @@
+KEMENTERIAN KEUANGAN REPUBLIK INDONESIA
+DIREKTORAT JENDERAL BEA DAN CUKAI
+KANTOR WILAYAH DJBC KALIMANTAN BAGIAN SELATAN
+KANTOR PENGAWASAN DAN PELAYANAN BEA DAN CUKAI TIPE MADYA PABEAN B BANJARMASIN
+Jalan Barito Ilir No. 1 Trisakti Banjarmasin 70119
+Telepon (0511) 3353528 Faksimile (0511) 4414500
+Laman www.beacukai.go.id Pusat Kontak Layanan 1500225
+
+NOTA DINAS
+Nomor: ND-     /KBC.1401/2026
+
+Yth.      : Seluruh Pejabat dan Pegawai di Lingkungan KPPBC TMP B Banjarmasin
+Dari      : Kepala Kantor
+Sifat     : Biasa
+Lampiran  : Satu Berkas
+Hal       : Penerapan dan Panduan Penggunaan Aplikasi WAVE (Weight Assessment on Vessel Entry)
+
+Sehubungan dengan Surat Keputusan Kepala Kantor nomor KEP-39/KBC.1501/2026 perihal Penetapan Aplikasi WAVE (Weight Assessment on Vessel Entry) di Lingkungan Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean B Banjarmasin tanggal 27 Januari 2026, serta komitmen berkelanjutan KPPBC TMP B Banjarmasin dalam mewujudkan modernisasi sistem pengawasan dan pelayanan kepabeanan yang lebih andal, efektif, dan akuntabel, khususnya terkait akurasi penetapan kuantitas barang curah ekspor dan impor, dengan ini disampaikan hal-hal sebagai berikut:
+
+1. Dalam rangka meminimalisir risiko kesalahan perhitungan (human error) dan mempercepat proses pemeriksaan fisik barang curah melalui metode Draught Survey, Kantor telah mengembangkan sebuah inovasi perangkat lunak mandiri yang diberi nama WAVE (Weight Assessment on Vessel Entry). Aplikasi ini dikembangkan dengan teknologi terkini berbasis Progressive Web App (PWA) untuk membantu Petugas Pemeriksa Barang dalam melakukan perhitungan Draught Survey secara cepat, akurat, dan terstandarisasi.
+
+2. Aplikasi WAVE dirancang secara khusus untuk dapat beradaptasi dengan berbagai kondisi lingkungan kerja petugas. Keunggulan fundamental dari aplikasi ini adalah fleksibilitas penggunaannya yang Multi-Platform dan Offline-First. Artinya, aplikasi ini tidak hanya dapat diinstal dan digunakan pada perangkat seluler (Smartphone Android dan iOS), tetapi juga dapat diakses dan diinstal secara penuh pada perangkat Komputer Desktop (PC/Laptop) melalui peramban Google Chrome atau Microsoft Edge. Adapun aplikasi WAVE dapat diakses pada laman https://s.kemenkeu.go.id/Wave.
+
+3. Fitur unggulan Offline Mode memastikan bahwa seluruh proses perhitungan—mulai dari input data Initial Survey, perhitungan Deductibles, hingga penerbitan Final Report—dapat berjalan lancar meskipun petugas berada di lokasi perairan, area anchorage, atau dermaga terpencil yang sama sekali tidak terjangkau sinyal internet, sehingga sangat andal digunakan di lokasi perairan atau area remote yang memiliki keterbatasan sinyal telekomunikasi. Hal ini menjadi solusi vital bagi kelancaran tugas operasional di wilayah perairan Kalimantan Bagian Selatan.
+
+4. Berkenaan dengan implementasi aplikasi tersebut, diinstruksikan kepada seluruh Pejabat dan Pegawai, khususnya Pejabat Fungsional Pemeriksa Dokumen dan Petugas Pemeriksa Barang pada Seksi Pelayanan Kepabeanan dan Cukai serta Seksi Penindakan dan Penyidikan, untuk mempedomani hal-hal berikut:
+   a. Segera melakukan instalasi aplikasi WAVE pada perangkat kerja masing-masing, baik itu Smartphone, Tablet, maupun Laptop dinas, guna menunjang mobilitas dan fleksibilitas kerja.
+   b. Menjadikan aplikasi WAVE sebagai instrumen standar dan alat bantu utama dalam setiap pelaksanaan Draught Survey untuk menjamin standarisasi dan validitas hasil perhitungan.
+   c. Tetap menjunjung tinggi integritas dengan memastikan seluruh data variabel yang diinput ke dalam aplikasi adalah data riil hasil pengamatan langsung di lapangan dan bersumber dari dokumen kapal yang sah (Ship's Particulars & Hydrostatic Tables).
+
+5. Petunjuk teknis mendetail mengenai tata cara instalasi pada berbagai perangkat (Mobile dan PC) serta manual penggunaan fitur-fitur aplikasi tercantum dalam Lampiran Nota Dinas ini.
+
+Demikian disampaikan untuk dilaksanakan dengan penuh tanggung jawab.
+
+Kepala Kantor,
+
+
+(Nama Kepala Kantor)
+NIP ...........................
+
+
+LAMPIRAN NOTA DINAS
+NOMOR : ND-     /KBC.1401/2026
+TANGGAL : 27 JANUARI 2026
+
+PANDUAN INSTALASI DAN MANUAL PENGGUNAAN APLIKASI WAVE
+(WEIGHT ASSESSMENT ON VESSEL ENTRY)
+
+I. PENDAHULUAN
+WAVE adalah aplikasi bantu perhitungan Draught Survey yang dapat berjalan secara offline. Aplikasi ini bertujuan meminimalisir kesalahan hitung manual dan mempercepat proses penetapan kuantitas barang curah.
+
+II. AKSES DAN INSTALASI APLIKASI
+Agar aplikasi dapat berjalan TANPA INTERNET (Offline) di tengah laut, aplikasi WAJIB diinstal terlebih dahulu ke perangkat saat masih mendapatkan sinyal internet.
+
+A. Alamat Akses
+   Buka melalui browser di HP Anda: https://s.kemenkeu.go.id/Wave
+
+B. Cara Instalasi di ANDROID (Google Chrome)
+   1. Buka alamat web di atas menggunakan Google Chrome.
+   2. Tekan ikon titik tiga (Menu) di pojok kanan atas layar.
+   3. Pilih menu "Install App" atau "Tambahkan ke Layar Utama" (Add to Home Screen).
+   4. Tekan "Install" pada konfirmasi yang muncul.
+   5. Tunggu sesaat, ikon aplikasi WAVE akan muncul di menu HP Anda seperti aplikasi biasa.
+
+C. Cara Instalasi di IPHONE / IOS (Wajib Safari)
+   1. Buka alamat web di atas menggunakan browser Safari (jangan gunakan Chrome/Google App di iPhone).
+   2. Tekan tombol "Share" (ikon kotak dengan panah ke atas) di bagian tengah bawah layar.
+   3. Gulir menu ke bawah dan pilih "Tambah ke Layar Utama" (Add to Home Screen).
+   4. Tekan "Tambah" (Add) di pojok kanan atas.
+   5. Aplikasi WAVE siap digunakan dari Home Screen iPhone Anda.
+
+D. Cara Instalasi di PC / LAPTOP (Windows / Mac)
+   1. Buka browser Google Chrome atau Microsoft Edge.
+   2. Kunjungi alamat: https://s.kemenkeu.go.id/Wave
+   3. Lihat pada bagian kanan kolom alamat (Address Bar), akan muncul ikon kecil bergambar monitor/panah unduh bertuliskan "Install WAVE".
+   4. Klik ikon tersebut, lalu pilih "Install".
+   5. Aplikasi akan terbuka dalam jendela tersendiri dan shortcut akan muncul di Desktop Anda.
+
+III. MANUAL BOOK & PETUNJUK PENGISIAN DETAIL
+
+A. HALAMAN LOGIN
+   1. Username: Isi dengan nama instansi (Contoh: KPPBC TMP B Banjarmasin).
+   2. Password: Isi dengan kota penempatan (Contoh: Banjarmasin).
+   3. Klik tombol "MASUK APLIKASI".
+
+B. TAB 1: INITIAL SURVEY (SURVEY AWAL)
+   Langkah-langkah pengisian data pada saat kapal belum muat / sebelum kegiatan muat dimulai:
+
+   1. DATA UKUR DRAFT (Draft Readings)
+      - Fwd (Depan): Isi draft depan kiri (Port) dan kanan (Stbd).
+      - Mid (Tengah): Isi draft tengah kiri (Port) dan kanan (Stbd).
+      - Aft (Belakang): Isi draft belakang kiri (Port) dan kanan (Stbd).
+      *Catatan: Gunakan titik (.) sebagai pemisah desimal, contoh: 4.50*
+
+   2. DATA KAPAL (Ship's Particulars)
+      - Lightship: Isi berat kapal kosong (lihat di Stability Booklet).
+      - LBP: Length Between Perpendiculars (Panjang antar garis tegak).
+      - Density: Berat jenis air perairan saat itu (Ukur dengan Hydrometer).
+        *Jika air tawar murni = 1.000, air laut = 1.025*
+
+   3. KOREKSI MARKA (Mark Corrections)
+      Isi jarak koreksi jika posisi angka draft tidak tepat di garis tegak (Perpendiculars).
+      - Fwd, Mid, Aft: Isi sesuai tabel koreksi kapal (biasanya ada di Stability Booklet).
+      - Jika tidak ada koreksi, isi dengan 0.
+
+   4. DEDUCTIBLES (Pengurangan Berat)
+      Isi jumlah cairan/beban lain yang ada di atas kapal berdasarkan hasil sounding tangki:
+      - Ballast Water: Total air balas.
+      - Fresh Water: Total air tawar.
+      - Fuel Oil: Total bahan bakar.
+      - Diesel Oil: Total minyak diesel.
+      - Lube Oil: Total minyak pelumas.
+      - Others: Beban lainnya (jika ada).
+
+   5. HYDROSTATIC DATA
+      Setelah draft diisi, aplikasi akan memunculkan nilai "Quarter Mean (QM)". Gunakan nilai QM ini untuk mencari data di Tabel Hidrostatik kapal:
+      - TPC: Tonnes Per Centimeter.
+      - LCF: Longitudinal Center of Flotation.
+      - MTC: Moment to Change Trim 1 cm.
+      - Displacement: Berat benaman kapal pada draft QM tersebut.
+
+   *Setelah semua terisi, aplikasi otomatis menghitung Net Displacement Initial.*
+
+C. TAB 2: FINAL SURVEY (SURVEY AKHIR)
+   Langkah-langkah pengisian data setelah kegiatan muat selesai:
+   
+   1. Lakukan pengisian data Draft, Density, dan Deductibles (Cairan) sama seperti pada Initial Survey, namun menggunakan angka pembacaan kondisi TERAKHIR (setelah muat).
+   2. Pastikan Lightship dan LBP tetap sama.
+   3. Perhatikan nilai "CONSTANT" yang muncul otomatis dari hasil Initial Survey.
+      *Jangan diubah manual kecuali ada alasan teknis yang kuat.*
+
+D. TAB 3: LAPORAN HASIL (REPORT)
+   Halaman ini adalah rekapitulasi otomatis. Anda tidak perlu mengisi apapun di sini.
+   1. Periksa "Total Cargo Loaded" (Ini adalah jumlah muatan bersih).
+   2. Tekan tombol "SIMPAN PDF" untuk mengunduh Laporan Resmi.
+   3. Laporan siap dicetak atau dilampirkan dalam Laporan Hasil Pemeriksaan (LHP).
+
+IV. FITUR PENTING
+   - Auto-Save: Data yang Anda ketik tidak akan hilang meskipun aplikasi ditutup tidak sengaja.
+   - Offline Mode: Seluruh perhitungan di Tab Initial, Final, dan Laporan tidak membutuhkan sinyal internet.
+   - Tombol Reset: Gunakan tombol "KOSONGKAN" di pojok kanan atas untuk menghapus seluruh data dan memulai survey kapal baru.
+
+Ditetapkan di Banjarmasin
+Pada tanggal 27 Januari 2026
+Kepala Kantor,
+
+
+(Nama Kepala Kantor)
