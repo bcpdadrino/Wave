@@ -6,7 +6,7 @@ WAVE (Weight Assessment on Vessel Entry) adalah aplikasi berbasis web (Progressi
 II. AKSES DAN INSTALASI
 1.  Alamat Akses:
     Buka peramban (browser) Google Chrome (Android) atau Safari (iOS) dan kunjungi alamat:
-    https://rinomanalu.github.io/Wave/
+    https://bcpdadrino.github.io/Wave/
 
 2.  Instalasi ke Perangkat (Wajib agar dapat digunakan Offline):
     a. Pengguna Android (Google Chrome):
