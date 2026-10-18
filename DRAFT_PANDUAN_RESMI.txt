@@ -25,8 +25,8 @@ III. PETUNJUK PENGGUNAAN
 
 A. Halaman Login
    - Saat pertama kali dibuka, pengguna akan diminta memasukkan kredensial.
-   - Username: Masukkan nama Instansi.
-   - Password: Masukkan Kota Penempatan.
+   - Username: Masukkan Nama Instansi (Beacukai).
+   - Password: Masukkan Nama Instansi (Beacukai).
    - Tekan tombol "MASUK APLIKASI" untuk memulai.
 
 B. Tahapan Pelaksanaan Survey

@@ -79,8 +79,8 @@ D. Cara Instalasi di PC / LAPTOP (Windows / Mac)
 III. MANUAL BOOK & PETUNJUK PENGISIAN DETAIL
 
 A. HALAMAN LOGIN
-   1. Username: Isi dengan nama instansi (Contoh: KPPBC TMP B Banjarmasin).
-   2. Password: Isi dengan kota penempatan (Contoh: Banjarmasin).
+   1. Username: Isi dengan nama instansi (Contoh: Beacukai).
+   2. Password: Isi dengan nama instansi (Contoh: Beacukai).
    3. Klik tombol "MASUK APLIKASI".
 
 B. TAB 1: INITIAL SURVEY (SURVEY AWAL)
